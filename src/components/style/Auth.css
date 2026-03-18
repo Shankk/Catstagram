@@ -1,0 +1,155 @@
+:root {
+    --front-img: clamp(256px, 30vw, 1024px);
+
+    --form-size: 18px;
+}
+
+.page {
+    min-height: 100vh;
+
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.content {
+    flex: 1;
+
+    display: flex;
+}
+
+.left-side{
+    background-color: rgb(16, 16, 16);
+    flex: 3;
+
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 2em 0em;
+}
+
+.right-side {
+    background-color: rgb(58, 30, 39);
+    color: white;
+    border-left: solid 2px palevioletred;
+
+    flex: 1;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: start;
+    padding: 0em 3em;
+    gap: 1em;
+}
+
+.container {
+    flex: 1;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.authForm {
+    width: 100%;
+
+    display: flex;
+    flex-flow: column nowrap;
+    text-align: left;
+    gap: 1em;
+}
+
+.form-button {
+    all: unset;
+    min-width: 100px;
+    min-height: 40px;
+    width: 100%;
+
+    text-align: center;
+    background: palevioletred;
+    border-radius: 2em;
+    font-size: var(--form-size);
+}
+
+.input-container {
+    background-color: transparent;
+    border: solid 1px palevioletred;
+    border-radius: 1em;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
+
+.input-container:hover {
+    border: solid 1px white;
+}
+.input-container:focus {
+    border: solid 1px white;
+}
+
+.authLabel {
+    position: absolute;
+    padding: 0em 1em;
+    user-select: none;
+    pointer-events: none;
+
+    transition: all 0.2s ease;
+}
+
+.input-container:focus-within .authLabel {
+    padding-bottom: 2em;
+    font-size: 14px;
+}
+.input-container:focus-within .authLabel {
+    padding-bottom: 2em;
+    font-size: 14px;
+}
+
+.authInput {
+    all:unset;
+    min-width: 100px;
+    min-height: 50px;
+
+    padding: 0em 1em;
+    padding-top: 1em;
+}
+
+.authInput:not(:placeholder-shown) + .authLabel {
+    padding-bottom: 2em;
+    font-size: 14px;
+}
+
+.logo {
+    align-self: start;
+    height: 128px;
+    margin-left: 2em;
+}
+
+.front {
+    width: auto;
+    height: var(--front-img);
+    align-self: center;
+}
+
+.front-text {
+    font-size: 48px;
+    color: white;
+    line-height: 1;
+
+    padding: 0em 4em;
+}
+
+.fancy-text {
+    background: linear-gradient(90deg, #ff7a18,#ff0066,#8a2be2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.footer {
+    background-color: rgb(16, 16, 16);
+    height:auto;
+
+    border-top: solid 2px palevioletred;
+    padding: 1em 0em;
+}
