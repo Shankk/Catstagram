@@ -1,5 +1,5 @@
 :root {
-    --front-img: clamp(256px, 30vw, 1024px);
+    --front-img: clamp(256px, 25vw, 1024px);
 
     --form-size: 18px;
 }
@@ -68,6 +68,10 @@
     background: palevioletred;
     border-radius: 2em;
     font-size: var(--form-size);
+    transition: all 0.2s ease;
+}
+.form-button:hover {
+    background-color: rgb(255, 132, 173);
 }
 
 .input-container {
@@ -89,7 +93,7 @@
 
 .authLabel {
     position: absolute;
-    padding: 0em 1em;
+    padding: 0em 1rem;
     user-select: none;
     pointer-events: none;
 
@@ -97,11 +101,11 @@
 }
 
 .input-container:focus-within .authLabel {
-    padding-bottom: 2em;
+    padding-bottom: 2rem;
     font-size: 14px;
 }
 .input-container:focus-within .authLabel {
-    padding-bottom: 2em;
+    padding-bottom: 2rem;
     font-size: 14px;
 }
 
@@ -110,12 +114,12 @@
     min-width: 100px;
     min-height: 50px;
 
-    padding: 0em 1em;
-    padding-top: 1em;
+    padding: 0em 1rem;
+    padding-top: 1rem;
 }
 
 .authInput:not(:placeholder-shown) + .authLabel {
-    padding-bottom: 2em;
+    padding-bottom: 2rem;
     font-size: 14px;
 }
 
