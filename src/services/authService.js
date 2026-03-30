@@ -1,12 +1,13 @@
 export async function fetchUserSession() {
     try {
-        const res = await fetch('http://localhost:3000/', {
+        const res = await fetch('http://localhost:3000/verify', {
             method: 'GET',
             credentials: 'include'
         });
 
         if(!res.ok) throw new Error('Session fetch failed');
         const data = await res.json();
+        //console.log("isUserAuthed?: ", data)
         return data;
     } catch (error) {
         console.error('Auth error:', error);

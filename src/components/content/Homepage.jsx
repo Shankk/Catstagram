@@ -10,6 +10,7 @@ import '../style/Homepage.css'
 function Homepage() {
   const navigate = useNavigate();
   const { setUser } = useUser();
+  //const { user } = useEnsureAuth();
   //const { path } = useParams();
 
   /* const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +32,7 @@ function Homepage() {
     <div className='page'>
         <div className='header'>
           <div className='head-title'>
-            <img className="header-logo" src="corsico-logo-trans-no-title.webp" alt="" />
+            <img className="header-logo" src="Catstagram-Logo.png" alt="" />
             <button className="home-button grow-btn" to="/">Catstagram</button>
           </div>
           <div className="head-nav">

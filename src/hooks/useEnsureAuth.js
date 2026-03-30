@@ -3,18 +3,20 @@ import { fetchUserSession } from "../services/authService";
 
 
 export function useEnsureAuth() {
-    const [user, setUser] = useState(null);
-    //const [loading, setLoading] = useState(true);
+    const [isAuthed, setAuth ] = useState(false);
+    //const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadUser() {
             const sessionUser = await fetchUserSession();
-            setUser(sessionUser);
-            //setLoading(false);
+            //console.log("EnsureAuth Data: ", sessionUser);
+            setAuth(sessionUser?.authenticated || false);
+            setLoading(false);
         }
 
         loadUser();
     }, []);
 
-    return { user }; // loading
+    return { isAuthed , loading};
 }
