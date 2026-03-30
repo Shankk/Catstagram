@@ -5,6 +5,15 @@ import { useUser } from "../../hooks/useUser";
 import { Default } from "./Default";
 import { LoginPage , SignupPage} from "./Auth";
 import '../style/Homepage.css'
+import home from '../../assets/header/home.png'
+import homeFilled from '../../assets/header/home-filled.png'
+import reel from '../../assets/header/play-square.png'
+import reelFilled from '../../assets/header/play-square-filled.png'
+import send from '../../assets/header/send.png'
+import sendFilled from '../../assets/header/send-filled.png'
+import heart from '../../assets/header/heart.png'
+import heartFilled from '../../assets/header/heart-filled.png'
+
 //import { useState } from "react";
 
 function Homepage() {
@@ -31,18 +40,17 @@ function Homepage() {
   return (
     <div className='page'>
         <div className='header'>
-          <div className='head-title'>
-            <img className="header-logo" src="Catstagram-Logo.png" alt="" />
-            <button className="home-button grow-btn" to="/">Catstagram</button>
-          </div>
-          <div className="head-nav">
+            <Link to='/' ><img className="header-logo" src="Catstagram-Logo.png" alt="" /></Link>
+
             <nav>
-              <a className="nav-item grow-btn" href="#services">Account</a>
-              <a className="nav-item grow-btn" href="#projects">Messages</a>
+              <Link className="nav-container" to='/' ><img className="nav-icon" src={home} alt="" />Home</Link>
+              <Link className="nav-container" to='/' ><img className="nav-icon" src={reel} alt="" />Reels</Link>
+              <Link className="nav-container" to='/' ><img className="nav-icon" src={send} alt="" />Messages</Link>
+              <Link className="nav-container" to='/' ><img className="nav-icon" src={heart} alt="" />Notifications</Link>
+              <Link className="nav-container" to='/' ><img className="nav-icon" id="profile-img" src="" alt="" />Profile</Link>
             </nav>
-            <button onClick={handleLogout} className="nav-item grow-btn" to="/log-out">Logout</button>
-          </div>
-        
+            
+            <button className="nav-container" onClick={handleLogout} to="/log-out">Logout</button>
         </div>
 
         <div className='content'>

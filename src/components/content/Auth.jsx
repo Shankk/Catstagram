@@ -96,7 +96,7 @@ function SignUpForm() {
 function LoginPage() {
 
     return (
-        <div className='page'>
+        <div className='auth-page'>
             <div className='content'>
                 <div className="left-side">
                     <div className="container">
@@ -124,7 +124,7 @@ function LoginPage() {
 function SignupPage() {
 
     return (
-        <div className='page'>
+        <div className='auth-page'>
             <div className='content'>
                 <div className="left-side">
                     <div className="container">

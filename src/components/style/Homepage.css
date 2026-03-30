@@ -1,0 +1,78 @@
+:root {
+    --header-img-width: 48px;
+    --header-font-size: 16px;
+    --header-icon-width: 32px;
+}
+
+.page  {
+    background-color: rgb(58, 30, 39);
+
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+#profile-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+
+    background-color: white;
+}
+
+.header {
+    width: 32px;
+    padding: 1em 1em;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    overflow: hidden;
+}
+
+.header:hover {
+    width: 200px;
+}
+
+.header-logo {
+    width: var(--header-img-width);
+    height: auto;
+
+    align-self: start;
+}
+
+nav {
+    flex: 1;
+    gap: 1em;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.nav-container {
+    all: unset;
+    width: 200px;
+    color: white;
+    border-radius: 8px;
+    padding: 8px;
+    gap: 16px;
+
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.nav-container:hover {
+    width: 200px;
+    background-color: palevioletred;
+    color: white;
+    font-weight: bold;
+}
+
+.nav-icon {
+    width: var(--header-icon-width);
+    height: auto;
+}
