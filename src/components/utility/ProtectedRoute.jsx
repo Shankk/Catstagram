@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
 
     if(loading) return <p>Loading...</p>;
     if(!isAuthed) return <Navigate to="/log-in"></Navigate>;
-    console.log("User is Authenticated! isAuthed: " , isAuthed)
+    //console.log("User is Authenticated! isAuthed: " , isAuthed)
 
     return children;
 }

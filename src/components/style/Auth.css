@@ -1,25 +1,37 @@
 :root {
     --front-img: clamp(256px, 25vw, 1024px);
-
     --form-size: 18px;
+
+    --rightside-bg-color: rgb(58, 30, 39);
+    --rightside-accent-color: palevioletred ;
+    --font-color: white;
 }
 
-.page {
+select {
+    border-radius: 2em;
+}
+
+select option {
+    background-color: var(--rightside-bg-color);
+    border-radius: 2em;
+    padding: 2em;
+}
+
+.auth-page {
     min-height: 100vh;
 
     display: flex;
     flex-flow: column nowrap;
 }
 
-.content {
+.auth-content {
     flex: 1;
-
     display: flex;
 }
 
 .left-side{
     background-color: rgb(16, 16, 16);
-    flex: 3;
+    flex: 2;
 
     display: flex;
     flex-flow: column nowrap;
@@ -27,6 +39,7 @@
 }
 
 .right-side {
+    max-width: 800px;
     background-color: rgb(58, 30, 39);
     color: white;
     border-left: solid 2px palevioletred;
@@ -74,7 +87,15 @@
     background-color: rgb(255, 132, 173);
 }
 
+.input-row {
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 8px;
+}
+
 .input-container {
+    flex: 1;
     background-color: transparent;
     border: solid 1px palevioletred;
     border-radius: 1em;
@@ -111,11 +132,13 @@
 
 .authInput {
     all:unset;
+    width: 75%;
     min-width: 100px;
     min-height: 50px;
 
     padding: 0em 1rem;
     padding-top: 1rem;
+    align-items: center;
 }
 
 .authInput:not(:placeholder-shown) + .authLabel {

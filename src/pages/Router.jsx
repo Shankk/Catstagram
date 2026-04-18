@@ -1,8 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { LoginPage, SignupPage} from "../components/content/Auth";
-import Homepage from "../components/content/Homepage";
+import Homepage from "../components/content/Home";
 import ErrorPage from "../components/content/Errorpage";
 import ProtectedRoute from "../components/utility/ProtectedRoute";
+import ProfilePage from "../components/content/Profile";
+import Layout from "../components/content/Layout";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -17,41 +19,27 @@ const Router = () => {
       errorElement: <ErrorPage />,
     },
     {
-      path: "/",
-      element: (
-        <ProtectedRoute>
-          <Homepage />
-        </ProtectedRoute>
-      ),
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: "/:path",
-      element: (
-        <ProtectedRoute>
-          <Homepage />
-        </ProtectedRoute>
-      ),
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: "/:path/:category",
-      element: (
-        <ProtectedRoute>
-          <Homepage />
-        </ProtectedRoute>
-      ),
-      errorElement: <ErrorPage />,
-    },
-    {
-      path: "/:path/:category/:action",
-      element: (
-        <ProtectedRoute>
-          <Homepage />
-        </ProtectedRoute>
-      ),
-      errorElement: <ErrorPage />,
-    },
+      element: <Layout />,
+      children: [
+        {
+          path: "/",
+          element: (
+            <ProtectedRoute>
+              <Homepage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/profile/:username",
+          element: (
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          ),
+        }
+      ],
+      errorElement: <ErrorPage />
+    }
   ]);
 
   return <RouterProvider router={router} />;

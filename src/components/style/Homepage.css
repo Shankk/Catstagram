@@ -1,27 +1,26 @@
 :root {
     --header-img-width: 48px;
     --header-font-size: 16px;
-    --header-icon-width: 32px;
+    --header-icon-size: 32px;
 }
 
 .page  {
     background-color: rgb(58, 30, 39);
+    min-height: 100vh;
 
     display: flex;
     flex-flow: row nowrap;
-}
-
-#profile-img {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-
-    background-color: white;
+    justify-content: center;
 }
 
 .header {
     width: 32px;
-    padding: 1em 1em;
+    height: 100vh;
+    
+    top: 0;
+    left: 0;
+    position: fixed;
+    padding: 0em 1em;
 
     display: flex;
     flex-flow: column nowrap;
@@ -36,9 +35,10 @@
 
 .header-logo {
     width: var(--header-img-width);
-    height: auto;
+    height: var(--header-img-width);
 
     align-self: start;
+    margin-top: 1em;
 }
 
 nav {
@@ -73,6 +73,41 @@ nav {
 }
 
 .nav-icon {
-    width: var(--header-icon-width);
-    height: auto;
+    width: var(--header-icon-size);
+    height: var(--header-icon-size);
+}
+
+.profile-border {
+    width: var(--header-icon-size);
+    height: var(--header-icon-size);
+    border-radius: 50%;
+    padding: 2px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.active-profile .profile-border{
+    background: linear-gradient(90deg, #ff7a18,#ff0066,#8a2be2);
+}
+
+#header-profile-img {
+    width: var(--header-icon-size);
+    height: var(--header-icon-size);
+    border-radius: 50%;
+    padding: 2px;
+    background: transparent;
+}
+
+#logout {
+
+    margin-bottom: 1em;
+}
+
+.content {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: start;
 }

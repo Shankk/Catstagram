@@ -1,0 +1,88 @@
+:root {
+    --profile-img-size: 150px;
+    --profile-box-size: 400px;
+    --profile-media-size: clamp(600px, 75vw, 1200px);
+}
+.profile-content {
+    display: flex;
+    flex-flow: column nowrap;
+    font-size: 14px;
+    gap: 16px;
+}
+
+.profile-box {
+    width: var(--profile-box-size);
+    height: auto;
+    align-self: center;
+
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 4em;
+}
+
+#profile-img {
+    width: var(--profile-img-size);
+    height: var(--profile-img-size);
+    border-radius: 50%;
+    background-color: white;
+}
+
+.profile-details {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: start;
+    align-items: start;
+    
+}
+.profile-username {
+    font-size: 18px;
+}
+
+.profile-stats {
+    display: flex;
+    flex-flow: row nowrap;
+    padding-top: 1em;
+    gap: 8px;
+}
+
+.profile-settings {
+    width: var(--profile-box-size);
+    align-self: center;
+    display: flex;
+    flex-flow: row nowrap;
+}
+.profile-edit {
+    all: unset;
+    flex: 1;
+    background-color: rgb(150, 78, 102);
+    border-radius: 1em;
+    padding: 1em 2em;
+    transition: all 0.2s ease;
+}
+.profile-edit:hover {
+    background-color: palevioletred;
+}
+
+.profile-media {
+    width: var(--profile-media-size);
+    height: 25px;
+    border-bottom: 1px solid grey;
+
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.media-button {
+    all: unset;
+    padding: 0em 1em;
+    transition: all 0s ease;
+}
+
+.media-button:hover {
+    border-bottom: 2px solid white;
+}

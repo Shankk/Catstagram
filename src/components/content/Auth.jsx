@@ -3,24 +3,25 @@ import front from '../../assets/front-social.png'
 import '../style/Auth.css'
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useUser } from "../../hooks/useUser";
 import { loginUser, signUpUser } from "../../services/authService";
+import CustomDropdown from "../utility/CustomDropdown";
+
+const days = Array.from({ length: 31 }, (_, i) => i + 1);
+const months = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
 
 function LogInForm() {
     const navigate = useNavigate();
-    const [username, setUsername ] = useState('');
+    const [email, setEmail ] = useState('');
     const [password, setPassword ] = useState('');
-    const {setUser } = useUser();
 
     const handleSubmit = async(e) => {
         e.preventDefault();
-
-        //console.log('UserContext', context)
         try{
-
-            const data = await loginUser({ username, password});
-            console.log('Login Good!', data.user);
-            setUser(data.user);
+            await loginUser({ email, password});
             navigate('/');
             window.location.reload();
         } catch (err) {
@@ -33,9 +34,9 @@ function LogInForm() {
             <p>Log in to Catstagram</p>
             <form className='authForm' onSubmit={handleSubmit}>
                 <div className='input-container'>
-                    <input className='authInput' type="text" name="username" placeholder=' ' 
-                    value={username} onChange={(e) => setUsername(e.target.value)}/>
-                    <label className='authLabel' htmlFor="username">Username or email address</label>
+                    <input className='authInput' type="email" name="email" placeholder=' ' 
+                    value={email} onChange={(e) => setEmail(e.target.value)}/>
+                    <label className='authLabel' htmlFor="email">Email address</label>
                 </div>
                 <div className='input-container'>
                     <input className='authInput' type="password" name="password" placeholder=' '
@@ -52,6 +53,12 @@ function LogInForm() {
 
 function SignUpForm() {
     const navigate = useNavigate();
+    const [email, setEmail ] = useState('');
+    const [firstname, setFirstname ] = useState('');
+    const [lastname, setLastname ] = useState('');
+    const [day, setDay ] = useState('');
+    const [month, setMonth ] = useState('');
+    const [year, setYear ] = useState('');
     const [username, setUsername ] = useState('');
     const [password, setPassword ] = useState('');
     const [code, setCode ] = useState('');
@@ -59,9 +66,14 @@ function SignUpForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const monthIndex = months.indexOf(month);
+        const birthdate = new Date(year, monthIndex, day);
+
         try{
-            const data = await signUpUser(username, password, code);
-            console.log('Sign up Good!', data.message);
+            await signUpUser(email,firstname, lastname, birthdate, username, password, code);
+            navigate('/log-in');
+            window.location.reload();
+            //console.log('Sign up Good!', data.message);
         } catch (err) {
             console.error('Sign up failed: ', err);
         }
@@ -72,15 +84,38 @@ function SignUpForm() {
             <p>Sign Up to Catstagram</p>
             <form className='authForm' onSubmit={handleSubmit}>
                 <div className='input-container'>
-                    <input className='authInput' type="text" name="username" placeholder=' '
-                    value={username} onChange={(e) => setUsername(e.target.value)}/>
-                    <label className='authLabel' htmlFor="username">Username or email address</label>
+                    <input className='authInput' type="text" name="email" placeholder=' '
+                    value={email} onChange={(e) => setEmail(e.target.value)}/>
+                    <label className='authLabel' htmlFor="email">Email address</label>
                 </div>
                 <div className='input-container'>
                     <input className='authInput' type="password" name="password" placeholder=' ' 
                     value={password} onChange={(e) => setPassword(e.target.value)}/>
                     <label className='authLabel' htmlFor="password">Password</label>
                 </div>
+                <div className='input-container'>
+                    <input className='authInput' type="text" name="username" placeholder=' '
+                    value={username} onChange={(e) => setUsername(e.target.value)}/>
+                    <label className='authLabel' htmlFor="username">Username</label>
+                </div>
+                <div className='input-row'>
+                    <CustomDropdown label="Day" options={days} value={day} onChange={setDay} />
+                    <CustomDropdown label="Month" options={months} value={month} onChange={setMonth} />
+                    <CustomDropdown label="Year" options={years} value={year} onChange={setYear} />
+                </div>
+                <div className='input-row'>
+                   <div className='input-container'>
+                        <input className='authInput' type="text" name="firstname" placeholder=' '
+                        value={firstname} onChange={(e) => setFirstname(e.target.value)}/>
+                        <label className='authLabel' htmlFor="firstname">First name</label>
+                    </div>
+                    <div className='input-container'>
+                        <input className='authInput' type="text" name="lastname" placeholder=' '
+                        value={lastname} onChange={(e) => setLastname(e.target.value)}/>
+                        <label className='authLabel' htmlFor="lastname">Last name</label>
+                    </div> 
+                </div>
+                
                 <div className='input-container'>
                     <input className='authInput' type="text" name="sign-up-code" placeholder=' ' 
                     value={code} onChange={(e) => setCode(e.target.value)}/>
@@ -97,7 +132,7 @@ function LoginPage() {
 
     return (
         <div className='auth-page'>
-            <div className='content'>
+            <div className='auth-content'>
                 <div className="left-side">
                     <div className="container">
                         <img className="logo" src={logo} alt="" />
@@ -125,7 +160,7 @@ function SignupPage() {
 
     return (
         <div className='auth-page'>
-            <div className='content'>
+            <div className='auth-content'>
                 <div className="left-side">
                     <div className="container">
                         <img className="logo" src={logo} alt="" />

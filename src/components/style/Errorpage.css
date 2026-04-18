@@ -1,0 +1,26 @@
+
+#error {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+}
+
+#error-header {
+    justify-content: start;
+}
+
+#error-content {
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+#error-footer {
+
+    display: flex;
+    flex-flow: row nowrap;
+    padding: 1em;
+}

@@ -1,0 +1,115 @@
+.dropdown-container {
+  flex: 1;
+  background-color: transparent;
+  border: solid 1px palevioletred;
+  border-radius: 1em;
+
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+}
+
+.dropdown-container:focus-within .dropdown-label {
+  padding-bottom: 2rem;
+  font-size: 14px;
+}
+.dropdown-container:focus-within .dropdown-label {
+  padding-bottom: 2rem;
+  font-size: 14px;
+}
+
+.dropdown-label {
+  position: absolute;
+  padding: 0em 1rem;
+  user-select: none;
+  pointer-events: none;
+
+  transition: all 0.2s ease;
+}
+
+.dropdown-selected {
+  all:unset;
+  min-width: 100px;
+  min-height: 50px;
+
+  padding: 0em 1rem;
+  padding-top: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.dropdown-selected:not(:placeholder-shown) + .dropdown-label {
+  padding-bottom: 2rem;
+  font-size: 14px;
+}
+
+.dropdown-selected:hover {
+  border-color: #ff9acb;
+}
+
+.dropdown-arrow {
+  margin-left: 10px;
+  color: #ffd6e8;
+}
+
+.dropdown-wrapper {
+  max-height: 200px;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: -1px;
+  width: 100%;
+  background: rgb(58, 30, 39);
+  border: 1px solid palevioletred;
+  border-radius: 0.5em;
+
+  padding: 0px 0px 0px 0px;
+  margin: 0px;
+  z-index: 10;
+  list-style: none;
+}
+
+.dropdown-list {
+  max-height: 200px;
+  width: 100%;
+  overflow-y: auto;
+  background: rgb(58, 30, 39);
+  border-radius: 0.5em;
+  padding: 0px;
+  margin: 0px;
+}
+
+.dropdown-item {
+  padding: 10px 14px;
+  color: #ffd6e8;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #3a1522;
+  color: #ffffff;
+}
+
+/* Scrollbar width */
+.dropdown-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Scrollbar track */
+.dropdown-list::-webkit-scrollbar-track {
+  background: #1a0a10;
+  border-radius: 0px 10px 10px 0px;
+}
+
+/* Scrollbar thumb */
+.dropdown-list::-webkit-scrollbar-thumb {
+  background: #ff7ab8;
+  border-radius: 10px;
+}
+
+/* Scrollbar thumb on hover */
+.dropdown-list::-webkit-scrollbar-thumb:hover {
+  background: #ff9acb;
+}
