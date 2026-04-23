@@ -4,6 +4,7 @@ import Homepage from "../components/content/Home";
 import ErrorPage from "../components/content/Errorpage";
 import ProtectedRoute from "../components/utility/ProtectedRoute";
 import ProfilePage from "../components/content/Profile";
+import MessagePage from "../components/content/Messages";
 import Layout from "../components/content/Layout";
 
 const Router = () => {
@@ -34,6 +35,14 @@ const Router = () => {
           element: (
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/direct",
+          element: (
+            <ProtectedRoute>
+              <MessagePage />
             </ProtectedRoute>
           ),
         }

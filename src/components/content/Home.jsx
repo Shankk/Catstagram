@@ -22,18 +22,17 @@ export function Header() {
     const {user, setUser} = useUser();
     const location = useLocation();
     const path = location.pathname;
-    const onProfilePage = path.startsWith(`/profile/${user.profile?.username}`); 
-    
+    const onProfilePage = user != null ? path.startsWith(`/profile/${user.profile?.username}`) : false; 
 
     
 
     const handleLogout = async () => {
-            const success = await logoutUser();
-            if(success) {
-              setUser(null); // clear user state
-              navigate('/'); //redirect to homepage
-              window.location.reload();
-            }
+        const success = await logoutUser();
+        if(success) {
+            setUser(null); // clear user state
+            navigate('/'); //redirect to homepage
+            window.location.reload();
+        }
     };
 
     return (
@@ -43,7 +42,7 @@ export function Header() {
             <nav>
                 <Link className="nav-container" to='/' ><img className="nav-icon" src={path === "/" ? homeFilled : home } alt="" />Home</Link>
                 <Link className="nav-container" to='/' ><img className="nav-icon" src={reel} alt="" />Reels</Link>
-                <Link className="nav-container" to='/' ><img className="nav-icon" src={send} alt="" />Messages</Link>
+                <Link className="nav-container" to='/direct' ><img className="nav-icon" src={path === "/direct" ? sendFilled : send} alt="" />Messages</Link>
                 <Link className="nav-container" to='/' ><img className="nav-icon" src={heart} alt="" />Notifications</Link>
                 <Link className={`nav-container ${onProfilePage ? "active-profile" : ""}`} to={user ?`/profile/${user.profile?.username}` : "#"}>
                     <div className='profile-border'>
@@ -71,11 +70,11 @@ export function Footer() {
 function User({image, username, name, isUser}) {
     return (
         <div className='user-box'>
-            <Link className='user-link'>
+            <Link className='user-link' to={`profile/${username}`}>
                 <img className='user-img' src={image} alt="" />
             </Link>
             <div className='user-info'>
-                <Link className='user-link'>{username ? username : "Username"}</Link>
+                <Link className='user-link' to={`profile/${username}`}>{username ? username : "Username"}</Link>
                 <div className='user-name'>{name != null ? name : "name"}</div>
             </div>
             {isUser ? <button className='user-logout'>Logout</button> : null}
@@ -124,7 +123,7 @@ function Reel() {
 }
 
 export default function Homepage() {
-    const {user, setUser} = useUser();
+    const {user} = useUser();
 
     return (
         <>

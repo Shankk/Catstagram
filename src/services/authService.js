@@ -7,7 +7,7 @@ export async function fetchUserSession() {
 
         if(!res.ok) throw new Error('Session fetch failed');
         const data = await res.json();
-        //console.log("isUserAuthed?: ", data)
+        
         return data;
     } catch (error) {
         console.error('Auth error:', error);
@@ -30,6 +30,48 @@ export async function fetchUserBasic() {
         console.error('Auth error:', error);
         return null;
     }
+}
+
+export async function fetchUserProfile(username) {
+    try {
+        const res = await fetch(`http://localhost:3000/profile/${username}`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        if(!res.ok) throw new Error('User profile fetch failed');
+        
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error('Auth error:', error);
+        return null;
+    }
+}
+
+export async function followUser(username) {
+    try {
+        const res = await fetch(`http://localhost:3000/follow/${username}`, {
+            method: 'POST',
+            credentials: 'include',
+        });
+
+        if(!res.ok) throw new Error('User follow fetch failed');
+        
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error('Follow error:', error);
+        return null;
+    }
+    
+}
+
+export async function unfollowUser(username) {
+    await fetch(`http://localhost:3000/follow/${username}`, {
+        method: 'DELETE',
+        credentials: 'include',
+    });
 }
 
 export async function loginUser({email, password}) {
