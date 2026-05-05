@@ -49,6 +49,36 @@ export async function fetchUserProfile(username) {
     }
 }
 
+export async function fetchUserConversations() {
+    try {
+        const res = await fetch(`http://localhost:3000/conversations`, {
+            method: 'GET',
+            credentials: 'include',
+        })
+
+        if(!res.ok) throw new Error('User Conversations fetch failed');
+        
+        const data = await res.json();
+        return data;
+
+    } catch (error) {
+        console.error("Conversation fetch error: ", error);
+        return null;
+    }
+}
+
+export async function createNewConversation(otherUser) {
+    const res = await fetch("http://localhost:3000/conversations", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: otherUser.id })
+    });
+
+    const conversation = await res.json();
+    return conversation;
+}
+
 export async function followUser(username) {
     try {
         const res = await fetch(`http://localhost:3000/follow/${username}`, {

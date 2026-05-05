@@ -1,6 +1,7 @@
 :root {
   --bg-color: rgb(58, 30, 39);
   --accent-color: palevioletred ;
+  --accent-soft-color: rgb(186, 95, 125);
 }
 
 /* CHAT PAGE WRAPPER */
@@ -194,5 +195,109 @@
   background: none;
   border: none;
   cursor: pointer;
+}
+
+/* NEW MESSAGE PANEL */
+.new-convo-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.new-convo-modal .modal-content {
+  min-width: 400px;
+  background: var(--bg-color);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  animation: slideUp 0.25s ease-out;
+
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.new-convo-modal h3 {
+  margin: 0 0 15px;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.new-convo-modal input[type="text"] {
+  flex: 1;
+  padding: 12px 14px;
+  background-color: transparent;
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.new-convo-modal input[type="text"]:focus {
+  border-color: #aaa;
+}
+
+.new-convo-modal .results {
+  margin-top: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.result-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.result-item:hover {
+  background: var(--accent-color);
+}
+
+.result-item img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+}
+
+.result-item span {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.new-convo-modal button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent-color);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.new-convo-modal button:hover {
+  background: var(--accent-soft-color);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0 }
+  to { transform: translateY(0); opacity: 1 }
 }
 

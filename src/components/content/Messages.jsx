@@ -1,69 +1,182 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useUser } from '../../hooks/useUser';
-import  '../style/Messages.css';
+import { socket } from '../../hooks/useSocket';
+import { createNewConversation, fetchUserConversations } from '../../services/authService';
+
 import catpic from '../../assets/cat-profile.webp';
 import SendIcon from '../../assets/icons/note-edit.svg';
+import  '../style/Messages.css';
 
-function User({image, username, name}) {
+function InboxItem({image, username, message, age}) {
     return (
-        <div className='user-box'>
-            <Link className='user-link'>
-                <img className='user-img' src={image} alt="" />
-            </Link>
-            <div className='user-info'>
-                <Link className='user-link'>{username ? username : "Username"}</Link>
-                <div className='user-name'>{name != null ? name : "name"}</div>
+        <div className="message-item">
+            <img src={image} className="avatar" />
+            <div className="message-info">
+                <p className="name">{username}</p>
+                <p className="last-message">{message} · {age} </p>
             </div>
         </div>
     )
 }
 
+function MessageSent({message}) {
+    return (
+        <div className="message-row sent">
+            <div className="bubble">{message}</div>
+        </div>
+    )
+}
+
+function MessageReceived({image, message}) {
+    return (
+        <div className="message-row received">
+            <img src={image} className="avatar-small" />
+            <div className="bubble">{message}</div>
+        </div>
+    )
+    
+}
+
+function NewConversationModal({ onClose, onSelectUser }) {
+    const [search, setSearch] = useState("");
+    const [results, setResults] = useState([]);
+    
+    // Fetch users as the search changes
+    useEffect(() => {
+    if (search.trim() === "") return;
+
+    async function searchUsers() {
+      const res = await fetch(`http://localhost:3000/search-users?query=${search}`, {
+        credentials: "include"
+      });
+      const data = await res.json();
+      setResults(data);
+    }
+
+        searchUsers();
+    }, [search]);
+
+    return (
+    <div className="new-convo-modal">
+      <div className="modal-content">
+        <h3>New Message</h3>
+
+        <input
+          type="text"
+          placeholder="Search users"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+
+        <div className="results">
+          {results.map(user => (
+            <div
+              key={user.id}
+              className="result-item"
+              onClick={() => onSelectUser(user)}
+            >
+              <img src={catpic /* user.profile.avatar */} />
+              <span>{user.profile.username}</span>
+            </div>
+          ))}
+        </div>
+
+        <button onClick={onClose}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
 function DirectMessageInbox() {
     const {user} = useUser();
+    const [conversations, setConversations] = useState([]);
+    const [showNewMessage, setShowNewMessage] = useState(false);
+
+    // Load all conversations
+    useEffect(() => {
+        async function loadConversations() {
+            const data = await fetchUserConversations();
+            setConversations(data);
+        }
+
+        loadConversations();
+    }, []);
+
+    useEffect(() => {
+        socket.on("new_message", msg => {
+            setConversations(prev => {
+            // Move the conversation to the top
+            const updated = prev.map(conv =>
+                conv.id === msg.conversationId ? { ...conv, messages: [msg] } : conv
+            );
+
+            // Sort by latest message timestamp
+            return updated.sort((a, b) =>
+                new Date(b.messages[0]?.createdAt) - new Date(a.messages[0]?.createdAt)
+                );
+            });
+        });
+
+        return () => socket.off("new_message");
+    }, []);
+
+    async function handleStartConversation(otherUser) {
+        const conversation = await createNewConversation(otherUser);
+
+        // Add to conversation list if new
+        setConversations(prev => {
+            const exists = prev.some(c => c.id === conversation.id);
+            if (exists) return prev;
+            return [conversation, ...prev];
+        });
+
+        // Close modal
+        setShowNewMessage(false);
+
+        // Open the conversation in the right panel
+        //setActiveConversation(conversation.id);
+
+        // Join the socket room
+        socket.emit("join_conversation", conversation.id);
+    }
 
     return (
         <>
             {/* <!-- Header --> */}
-            <header class="messages-header">
-                <h2 class="username">{user.profile?.username}</h2>
-                <button class="new-message-btn">
+            <header className="messages-header">
+                <h2 className="username">{user.profile?.username}</h2>
+                <button className="new-message-btn" onClick={() => setShowNewMessage(true)}>
                     <img src={SendIcon} alt="" />
                 </button>
             </header>
 
             {/* <!-- Search Bar --> */}
-            <div class="search-bar">
+            <div className="search-bar">
                 <input type="text" placeholder="Search" />
             </div>
 
             {/* <!-- Messages List --> */}
-            <div class="messages-list">
+            <div className="messages-list">
+                {conversations.map(conv => {
+                    const other = conv.participants.find(p => p.userId !== user.id)?.user;
 
-                {/* <!-- Single Conversation Item --> */}
-                <div class="message-item">
-                    <img src={catpic} class="avatar" />
-                    <div class="message-info">
-                        <p class="name">john_doe</p>
-                        <p class="last-message">Sent a photo · 2h</p>
-                    </div>
-                </div>
-
-                <div class="message-item">
-                    <img src={catpic} class="avatar" />
-                    <div class="message-info">
-                        <p class="name">sarah</p>
-                        <p class="last-message">Typing…</p>
-                    </div>
-                </div>
-
-                <div class="message-item">
-                    <img src={catpic} class="avatar" />
-                    <div class="message-info">
-                        <p class="name">mike</p>
-                        <p class="last-message">You: Sounds good!</p>
-                    </div>
-                </div>
+                    return (
+                        <InboxItem
+                            key={conv.id}
+                            image={catpic /* other.profile?.avatar */}
+                            username={other.profile?.username}
+                            message={conv.messages[0]?.text || "No messages yet"}
+                            age={"2h"} // You can replace this with a real timestamp formatter
+                            conversationId={conv.id}
+                        />
+                        );
+                    })
+                }
             </div>
+
+            {showNewMessage && (
+                <NewConversationModal onClose={() => setShowNewMessage(false)} onSelectUser={handleStartConversation} />
+            )}
         </>
         
     )
@@ -72,50 +185,43 @@ function ChatScreen() {
     return(
         <>
             {/* <!-- Chat Header --> */}
-            <header class="chat-header">
-                <div class="chat-user">
-                    <img src={catpic} class="avatar-small" />
-                    <p class="name">john_doe</p>
+            <header className="chat-header">
+                <div className="chat-user">
+                    <img src={catpic} className="avatar-small" />
+                    <p className="name">john_doe</p>
                 </div>
-                <button class="back-btn">
+                <button className="back-btn">
                     
                 </button>
-                <button class="info-btn">
+                <button className="info-btn">
                     
                 </button>
             </header>
 
             {/* <!-- Messages Area --> */}
-            <div class="chat-messages">
+            <div className="chat-messages">
 
-                {/* <!-- Received Message --> */}
-                <div class="message-row received">
-                    <img src={catpic} class="avatar-small" />
-                    <div class="bubble">Hey, what’s up?</div>
-                </div>
+                <MessageReceived image={catpic} message={"Hey"} />
 
-                {/* <!-- Sent Message --> */}
-                <div class="message-row sent">
-                    <div class="bubble">All good! Working on a project.</div>
-                </div>
+                <MessageSent message={"I am good."} />
 
-                <div class="message-row received">
-                    <img src={catpic} class="avatar-small" />
-                    <div class="bubble">Nice! Send it when you're done.</div>
-                </div>
+                <MessageReceived image={catpic} message={"thats good"} />
 
             </div>
 
             {/* <!-- Input Bar --> */}
-            <div class="chat-input">
+            <div className="chat-input">
                 <input type="text" placeholder="Message..." />
-                <button class="icon-btn">Send</button>
+                <button className="icon-btn">Send</button>
             </div>
         </>
     )
 }
 
 export default function MessagePage() {
+    //socket.emit("join_conversation", conversationId);
+    //socket.on("new_message", msg => setMessages(prev => [...prev, msg]));
+
 
     return (
         <>
