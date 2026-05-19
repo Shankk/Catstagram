@@ -7,54 +7,39 @@ import ProfilePage from "../components/content/Profile";
 import MessagePage from "../components/content/Messages";
 import Layout from "../components/content/Layout";
 import SettingsPage from "../components/content/Settings";
+import GuestRoute from "../components/utility/GuestRoute";
 
 const Router = () => {
   const router = createBrowserRouter([
     {
       path: "/log-in",
-      element: <LoginPage/>,
+      element: (
+        <GuestRoute>
+          <LoginPage/>
+        </GuestRoute>
+      ),
       errorElement: <ErrorPage />,
     },
     {
       path: "/sign-up",
-      element: <SignupPage />,
+      element: ( 
+        <GuestRoute>
+          <SignupPage />
+        </GuestRoute> 
+      ) ,
       errorElement: <ErrorPage />,
     },
     {
-      element: <Layout />,
+      element: (
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      ),
       children: [
-        {
-          path: "/",
-          element: (
-            <ProtectedRoute>
-              <Homepage />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/profile/:username",
-          element: (
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/direct",
-          element: (
-            <ProtectedRoute>
-              <MessagePage />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/settings",
-          element: (
-            <ProtectedRoute>
-              <SettingsPage />
-            </ProtectedRoute>
-          ),
-        },
+        { path: "/", element: <Homepage /> },
+        { path: "/profile/:username", element: <ProfilePage /> },
+        { path: "/direct", element: <MessagePage /> },
+        { path: "/settings", element: <SettingsPage /> },
       ],
       errorElement: <ErrorPage />
     }

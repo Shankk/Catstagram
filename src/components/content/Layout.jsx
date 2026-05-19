@@ -10,6 +10,8 @@ export default function Layout() {
         return <div>Loading...</div>
     }
 
+    if(!user) return null;
+
     return (
         <div className='page'>
             <div className='header'>
