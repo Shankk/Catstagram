@@ -1,12 +1,13 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import '../style/Profile.css'
 import { useUser } from '../../hooks/useUser';
 import catpic from '../../assets/cat-profile.webp';
 import { useEffect, useState } from 'react';
-import { fetchUserProfile, followUser, unfollowUser } from '../../services/authService';
+import { fetchUserProfile, followUser, unfollowUser } from '../../services/userService';
 
 
 export function ProfilePage() {
+    const navigate = useNavigate();
     const { username } = useParams();
     const { user } = useUser();
     const [ profile, setProfile ] = useState(null);
@@ -20,6 +21,7 @@ export function ProfilePage() {
     
     useEffect(() => {
         // React 19 false-postive. Ignore as our setState is safe.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         loadProfile();
     }, [username]);
 
@@ -35,7 +37,7 @@ export function ProfilePage() {
     return (
         <div className='profile-content'>
             <div className='profile-box'>
-                <img id='profile-img' src={catpic} alt="" />
+                <img id='profile-img' src={profile?.profile.avatar ? `http://localhost:3000${profile?.profile.avatar}` : catpic} alt="" />
                 <div className='profile-details'>
                     <div className='profile-username'>{profile?.profile.username}</div>
                     <div className='profile-fullname'>{ profile?.profile.firstname } { profile?.profile.lastname }</div>
@@ -50,7 +52,7 @@ export function ProfilePage() {
                 </div>
             </div>
             <div className='profile-settings'>
-                <button className='profile-edit'>Edit profile</button>
+                <button className='profile-edit' onClick={() => navigate("/settings")}>Edit profile</button>
                 {!isOwnProfile && (
                     isFollowing ? ( 
                         <button className='profile-edit' onClick={handleUnfollow}>Unfollow</button>

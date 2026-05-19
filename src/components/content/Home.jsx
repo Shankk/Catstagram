@@ -46,7 +46,7 @@ export function Header() {
                 <Link className="nav-container" to='/' ><img className="nav-icon" src={heart} alt="" />Notifications</Link>
                 <Link className={`nav-container ${onProfilePage ? "active-profile" : ""}`} to={user ?`/profile/${user.profile?.username}` : "#"}>
                     <div className='profile-border'>
-                        <img className="nav-icon"  id="header-profile-img" src={catpic} alt={null} />
+                        <img className="nav-icon"  id="header-profile-img" src={user.profile?.avatar ? `http://localhost:3000${user.profile?.avatar}` : catpic} alt={null} />
                     </div>
                     Profile
                 </Link>
@@ -142,7 +142,7 @@ export default function Homepage() {
                 </div>
             </div>
             <div className='side'>
-                <User image={catpic} username={user.profile?.username} name={user.profile?.firstname} isUser={true} ></User>
+                <User image={user.profile?.avatar ? `http://localhost:3000${user.profile?.avatar}` : catpic} username={user.profile?.username} name={user.profile?.firstname} isUser={true} ></User>
                 <div>Suggested for you </div>
                 <User></User>
 

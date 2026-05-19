@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '../../hooks/useUser';
 import { socket } from '../../hooks/useSocket';
-import { createNewConversation, fetchUserConversations } from '../../services/authService';
+import { createNewConversation, fetchConversation, 
+        fetchConversationMessages, fetchUserConversations, 
+        fetchUserSearch, sendNewMessage 
+} from '../../services/userService';
 
 import catpic from '../../assets/cat-profile.webp';
 import SendIcon from '../../assets/icons/note-edit.svg';
 import  '../style/Messages.css';
 
-function InboxItem({image, username, message, age}) {
+function InboxItem({image, username, message, age, onClick}) {
     return (
-        <div className="message-item">
+        <div className="message-item" onClick={onClick}>
             <img src={image} className="avatar" />
             <div className="message-info">
                 <p className="name">{username}</p>
@@ -45,13 +48,10 @@ function NewConversationModal({ onClose, onSelectUser }) {
     useEffect(() => {
     if (search.trim() === "") return;
 
-    async function searchUsers() {
-      const res = await fetch(`http://localhost:3000/search-users?query=${search}`, {
-        credentials: "include"
-      });
-      const data = await res.json();
-      setResults(data);
-    }
+        async function searchUsers() {
+            const data = await fetchUserSearch(search);
+            setResults(data);
+        }
 
         searchUsers();
     }, [search]);
@@ -75,7 +75,7 @@ function NewConversationModal({ onClose, onSelectUser }) {
               className="result-item"
               onClick={() => onSelectUser(user)}
             >
-              <img src={catpic /* user.profile.avatar */} />
+              <img src={user.profile.avatar ? `http://localhost:3000${user.profile.avatar}` : catpic  } />
               <span>{user.profile.username}</span>
             </div>
           ))}
@@ -87,11 +87,20 @@ function NewConversationModal({ onClose, onSelectUser }) {
   );
 }
 
-function DirectMessageInbox() {
+function DirectMessageInbox({ setActiveConversationId}) {
     const {user} = useUser();
+    const [search, setSearch] = useState("");
     const [conversations, setConversations] = useState([]);
     const [showNewMessage, setShowNewMessage] = useState(false);
+    const filtered = conversations.filter(conv => {
+        const text = search.toLowerCase();
+        const other = conv.participants.find(p => p.userId !== user.id)?.user;
 
+        return (
+            other?.profile?.username?.toLowerCase().includes(text) ||
+            conv.messages[0]?.text?.toLowerCase().includes(text) 
+        )
+    })
     // Load all conversations
     useEffect(() => {
         async function loadConversations() {
@@ -101,7 +110,6 @@ function DirectMessageInbox() {
 
         loadConversations();
     }, []);
-
     useEffect(() => {
         socket.on("new_message", msg => {
             setConversations(prev => {
@@ -119,8 +127,8 @@ function DirectMessageInbox() {
 
         return () => socket.off("new_message");
     }, []);
-
     async function handleStartConversation(otherUser) {
+        //console.log("other user: ", otherUser)
         const conversation = await createNewConversation(otherUser);
 
         // Add to conversation list if new
@@ -129,19 +137,16 @@ function DirectMessageInbox() {
             if (exists) return prev;
             return [conversation, ...prev];
         });
-
         // Close modal
         setShowNewMessage(false);
-
         // Open the conversation in the right panel
-        //setActiveConversation(conversation.id);
-
+        setActiveConversationId(conversation.id);
         // Join the socket room
         socket.emit("join_conversation", conversation.id);
     }
 
     return (
-        <>
+        <div className='messages-page'>
             {/* <!-- Header --> */}
             <header className="messages-header">
                 <h2 className="username">{user.profile?.username}</h2>
@@ -152,12 +157,17 @@ function DirectMessageInbox() {
 
             {/* <!-- Search Bar --> */}
             <div className="search-bar">
-                <input type="text" placeholder="Search" />
+                <input 
+                    type="text" 
+                    placeholder="Search conversations..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)} 
+                />
             </div>
 
             {/* <!-- Messages List --> */}
             <div className="messages-list">
-                {conversations.map(conv => {
+                {filtered.map(conv => {
                     const other = conv.participants.find(p => p.userId !== user.id)?.user;
 
                     return (
@@ -167,7 +177,7 @@ function DirectMessageInbox() {
                             username={other.profile?.username}
                             message={conv.messages[0]?.text || "No messages yet"}
                             age={"2h"} // You can replace this with a real timestamp formatter
-                            conversationId={conv.id}
+                            onClick={() => setActiveConversationId(conv.id)}
                         />
                         );
                     })
@@ -175,20 +185,82 @@ function DirectMessageInbox() {
             </div>
 
             {showNewMessage && (
-                <NewConversationModal onClose={() => setShowNewMessage(false)} onSelectUser={handleStartConversation} />
+                <NewConversationModal 
+                    onClose={() => setShowNewMessage(false)} 
+                    onSelectUser={handleStartConversation} 
+                />
             )}
-        </>
+        </div>
         
     )
 }
-function ChatScreen() {
+
+function ChatScreen({activeConversationId}) {
+    const { user } = useUser();
+    const [ otherUser, setOtherUser] = useState(null);
+    const [ messages, setMessages] = useState([]);
+    const [ input, setInput] = useState("");
+
+    useEffect(() => {
+        if(!activeConversationId) return;
+
+        async function loadParticipants() {
+            const conv = await fetchConversation(activeConversationId);
+
+            const other = conv.participants.find(
+                p => p.user.id !== user.id
+            )?.user;
+
+            setOtherUser(other);
+        }
+
+        loadParticipants();
+    }, [activeConversationId]);
+
+    useEffect(() => {
+        if(!activeConversationId) return;
+
+        async function loadMessages() {
+            const messages = await fetchConversationMessages(activeConversationId)
+            setMessages(messages);
+        }
+        loadMessages();
+
+        // join socket room
+        socket.emit("join_conversation", activeConversationId);
+    }, [activeConversationId]);
+
+    useEffect(() => {
+        socket.on("new_message", msg => {
+            if (msg.conversationId === activeConversationId) {
+                setMessages(prev => [...prev, msg]);
+            }
+        });
+
+        return () => socket.off("new_message");
+    }, [activeConversationId]);
+
+    async function sendMessage() {
+        if(!input.trim()) return;
+
+        console.log("SEND MESSAGE FIRED");
+        const newMsg = await sendNewMessage(activeConversationId, input);
+        
+        // Optimistic update (optional)
+        setMessages(prev => [...prev, newMsg]);
+        //Emit socket event
+        socket.emit("send_message", newMsg);
+
+        setInput("");
+    }
+
     return(
-        <>
+        <div className="chat-page">
             {/* <!-- Chat Header --> */}
             <header className="chat-header">
                 <div className="chat-user">
-                    <img src={catpic} className="avatar-small" />
-                    <p className="name">john_doe</p>
+                    <img className="avatar-small" src={otherUser?.profile?.avatar ? `http://localhost:3000${otherUser?.profile?.avatar}` : catpic} />
+                    <p className="name">{otherUser?.profile?.username}</p>
                 </div>
                 <button className="back-btn">
                     
@@ -200,38 +272,48 @@ function ChatScreen() {
 
             {/* <!-- Messages Area --> */}
             <div className="chat-messages">
+                {messages.map(msg => {
+                    const isMe = msg.senderId === user.id;
 
-                <MessageReceived image={catpic} message={"Hey"} />
-
-                <MessageSent message={"I am good."} />
-
-                <MessageReceived image={catpic} message={"thats good"} />
-
+                    return isMe ? (
+                        <MessageSent key={msg.id} message={msg.text} />
+                    ) : (
+                        <MessageReceived 
+                            key={msg.id}
+                            image={msg.sender.profile?.avatar ? `http://localhost:3000${msg.sender.profile?.avatar}` : catpic}
+                            message={msg.text}
+                        />
+                    )
+                })}
             </div>
 
             {/* <!-- Input Bar --> */}
             <div className="chat-input">
-                <input type="text" placeholder="Message..." />
-                <button className="icon-btn">Send</button>
+                <input 
+                    type="text" 
+                    placeholder="Message..."
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && sendMessage()}
+                />
+                <button className="icon-btn" onClick={sendMessage}>Send</button>
             </div>
-        </>
+        </div>
     )
 }
 
 export default function MessagePage() {
-    //socket.emit("join_conversation", conversationId);
-    //socket.on("new_message", msg => setMessages(prev => [...prev, msg]));
-
+    const [activeConversationId, setActiveConversationId] = useState(null);
 
     return (
         <>
-            <div className='messages-page'>
-                <DirectMessageInbox></DirectMessageInbox>
-            </div>
-            <div className="chat-page">
-                <ChatScreen></ChatScreen>
-            </div>
-        </>
+            <DirectMessageInbox 
+                setActiveConversationId={setActiveConversationId}
+            />
         
-    )
+            <ChatScreen 
+                activeConversationId={activeConversationId} 
+            />
+        </>
+    );
 }

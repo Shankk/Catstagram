@@ -6,6 +6,7 @@ import ProtectedRoute from "../components/utility/ProtectedRoute";
 import ProfilePage from "../components/content/Profile";
 import MessagePage from "../components/content/Messages";
 import Layout from "../components/content/Layout";
+import SettingsPage from "../components/content/Settings";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -45,7 +46,15 @@ const Router = () => {
               <MessagePage />
             </ProtectedRoute>
           ),
-        }
+        },
+        {
+          path: "/settings",
+          element: (
+            <ProtectedRoute>
+              <SettingsPage />
+            </ProtectedRoute>
+          ),
+        },
       ],
       errorElement: <ErrorPage />
     }

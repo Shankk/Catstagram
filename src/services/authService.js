@@ -15,92 +15,21 @@ export async function fetchUserSession() {
     }
 }
 
-export async function fetchUserBasic() {
-    try {
-        const res = await fetch('http://localhost:3000/userbasic', {
-            method: 'GET',
-            credentials: 'include'
-        });
-
-        if(!res.ok) throw new Error('User basic fetch failed');
-        const data = await res.json();
-        //console.log("fetched-Data: ", data)
-        return data.user;
-    } catch (error) {
-        console.error('Auth error:', error);
-        return null;
-    }
-}
-
-export async function fetchUserProfile(username) {
-    try {
-        const res = await fetch(`http://localhost:3000/profile/${username}`, {
-            method: 'GET',
-            credentials: 'include',
-        });
-
-        if(!res.ok) throw new Error('User profile fetch failed');
-        
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error('Auth error:', error);
-        return null;
-    }
-}
-
-export async function fetchUserConversations() {
-    try {
-        const res = await fetch(`http://localhost:3000/conversations`, {
-            method: 'GET',
-            credentials: 'include',
-        })
-
-        if(!res.ok) throw new Error('User Conversations fetch failed');
-        
-        const data = await res.json();
-        return data;
-
-    } catch (error) {
-        console.error("Conversation fetch error: ", error);
-        return null;
-    }
-}
-
-export async function createNewConversation(otherUser) {
-    const res = await fetch("http://localhost:3000/conversations", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: otherUser.id })
+export async function verifyPassword(password) {
+    const res = await fetch("http://localhost:3000/account/verify-password", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password })
     });
 
-    const conversation = await res.json();
-    return conversation;
+    return res;
 }
 
-export async function followUser(username) {
-    try {
-        const res = await fetch(`http://localhost:3000/follow/${username}`, {
-            method: 'POST',
-            credentials: 'include',
-        });
-
-        if(!res.ok) throw new Error('User follow fetch failed');
-        
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error('Follow error:', error);
-        return null;
-    }
-    
-}
-
-export async function unfollowUser(username) {
-    await fetch(`http://localhost:3000/follow/${username}`, {
-        method: 'DELETE',
-        credentials: 'include',
+export async function deleteAccount() {
+    await fetch("http://localhost:3000/account/delete", {
+      method: "DELETE",
+      credentials: "include"
     });
 }
 

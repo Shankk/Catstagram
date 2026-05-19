@@ -87,65 +87,6 @@ select option {
     background-color: rgb(255, 132, 173);
 }
 
-.input-row {
-    width: 100%;
-    display: flex;
-    flex-flow: row nowrap;
-    gap: 8px;
-}
-
-.input-container {
-    flex: 1;
-    background-color: transparent;
-    border: solid 1px palevioletred;
-    border-radius: 1em;
-
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-}
-
-.input-container:hover {
-    border: solid 1px white;
-}
-.input-container:focus {
-    border: solid 1px white;
-}
-
-.authLabel {
-    position: absolute;
-    padding: 0em 1rem;
-    user-select: none;
-    pointer-events: none;
-
-    transition: all 0.2s ease;
-}
-
-.input-container:focus-within .authLabel {
-    padding-bottom: 2rem;
-    font-size: 14px;
-}
-.input-container:focus-within .authLabel {
-    padding-bottom: 2rem;
-    font-size: 14px;
-}
-
-.authInput {
-    all:unset;
-    width: 75%;
-    min-width: 100px;
-    min-height: 50px;
-
-    padding: 0em 1rem;
-    padding-top: 1rem;
-    align-items: center;
-}
-
-.authInput:not(:placeholder-shown) + .authLabel {
-    padding-bottom: 2rem;
-    font-size: 14px;
-}
-
 .logo {
     align-self: start;
     height: 128px;

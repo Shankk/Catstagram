@@ -1,9 +1,10 @@
 :root {
-  --text: #6b6375;
+  --text: #ffffff;
   --text-h: #08060d;
-  --bg: #fff;
+  --bg: rgb(58, 30, 39);;
   --border: #e5e4e7;
-  --accent: #aa3bff;
+  --accent: palevioletred;
+  --accent-soft: rgb(186, 95, 125);
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
@@ -65,4 +66,64 @@ h2 {
 }
 p {
   margin: 0;
+}
+
+label {
+  position: absolute;
+  padding: 0em 1rem;
+  user-select: none;
+  pointer-events: none;
+
+  transition: all 0.2s ease;
+}
+
+input {
+  all:unset;
+  flex: 1;
+  min-width: 100px;
+  min-height: 25px;
+
+  padding: 0em 1rem;
+  padding-top: 1rem;
+}
+
+input:not(:placeholder-shown) + label {
+  padding-bottom: 2rem;
+  font-size: 14px;
+}
+
+.input-row {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 8px;
+}
+
+.input-column {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 8px;
+}
+
+.input-container {
+  flex: 1;
+  max-height: 75px;
+  background-color: transparent;
+  border: solid 1px palevioletred;
+  border-radius: 1em;
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+}
+
+.input-container:hover {
+  border: solid 1px white;
+}
+.input-container:focus {
+  border: solid 1px white;
+}
+
+.input-container:focus-within label {
+  padding-bottom: 2rem;
+  font-size: 14px;
 }
