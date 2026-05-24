@@ -190,6 +190,36 @@
   border: none;
   cursor: pointer;
 }
+/* CHAT SCREEN PLACEHOLDER */
+.chat-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.chat-placeholder-icon {
+  font-size: 60px;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.chat-placeholder h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.chat-placeholder p {
+  margin-top: 6px;
+  font-size: 15px;
+  opacity: 0.8;
+}
+
 
 /* NEW MESSAGE PANEL */
 .new-convo-modal {

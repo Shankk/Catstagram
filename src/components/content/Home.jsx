@@ -29,6 +29,7 @@ export function Header() {
     const handleLogout = async () => {
         const success = await logoutUser();
         if(success) {
+            localStorage.removeItem("lastConversation");
             setUser(null); // clear user state
             navigate('/'); //redirect to homepage
             window.location.reload();
@@ -90,6 +91,7 @@ function Story() {
         </Link>
     )
 }
+
 function Reel() {
     return (
         <div className="reel">

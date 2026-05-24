@@ -5,7 +5,7 @@ import { createNewConversation, fetchConversation,
         fetchConversationMessages, fetchUserConversations, 
         fetchUserSearch, sendNewMessage 
 } from '../../services/userService';
-
+import formatTimestamp from '../utility/timeFormatter';
 import catpic from '../../assets/cat-profile.webp';
 import SendIcon from '../../assets/icons/note-edit.svg';
 import  '../style/Messages.css';
@@ -127,6 +127,12 @@ function DirectMessageInbox({ setActiveConversationId}) {
 
         return () => socket.off("new_message");
     }, []);
+
+    useEffect(() => {
+        const last = localStorage.getItem("lastConversation");
+        if(last) { setActiveConversationId(Number(last))}
+    },[]);
+
     async function handleStartConversation(otherUser) {
         //console.log("other user: ", otherUser)
         const conversation = await createNewConversation(otherUser);
@@ -173,11 +179,12 @@ function DirectMessageInbox({ setActiveConversationId}) {
                     return (
                         <InboxItem
                             key={conv.id}
-                            image={catpic /* other.profile?.avatar */}
+                            image={other.profile?.avatar ? `http://localhost:3000${other.profile?.avatar}` : catpic }
                             username={other.profile?.username}
                             message={conv.messages[0]?.text || "No messages yet"}
-                            age={"2h"} // You can replace this with a real timestamp formatter
-                            onClick={() => setActiveConversationId(conv.id)}
+                            age={formatTimestamp(conv.messages[0].createdAt)} // You can replace this with a real timestamp formatter
+                            onClick={() => { setActiveConversationId(conv.id); localStorage.setItem("lastConversation", conv.id)}}
+                            
                         />
                         );
                     })
@@ -256,48 +263,59 @@ function ChatScreen({activeConversationId}) {
 
     return(
         <div className="chat-page">
-            {/* <!-- Chat Header --> */}
-            <header className="chat-header">
-                <div className="chat-user">
-                    <img className="avatar-small" src={otherUser?.profile?.avatar ? `http://localhost:3000${otherUser?.profile?.avatar}` : catpic} />
-                    <p className="name">{otherUser?.profile?.username}</p>
-                </div>
-                <button className="back-btn">
-                    
-                </button>
-                <button className="info-btn">
-                    
-                </button>
-            </header>
+            {activeConversationId ? (
+                <>
+                    {/* <!-- Chat Header --> */}
+                    <header className="chat-header">
+                        <div className="chat-user">
+                            <img className="avatar-small" src={otherUser?.profile?.avatar ? `http://localhost:3000${otherUser?.profile?.avatar}` : catpic} />
+                            <p className="name">{otherUser?.profile?.username}</p>
+                        </div>
+                        <button className="back-btn">
+                            
+                        </button>
+                        <button className="info-btn">
+                            
+                        </button>
+                    </header>
 
-            {/* <!-- Messages Area --> */}
-            <div className="chat-messages">
-                {messages.map(msg => {
-                    const isMe = msg.senderId === user.id;
+                    {/* <!-- Messages Area --> */}
+                    <div className="chat-messages">
+                        {messages.map(msg => {
+                            const isMe = msg.senderId === user.id;
 
-                    return isMe ? (
-                        <MessageSent key={msg.id} message={msg.text} />
-                    ) : (
-                        <MessageReceived 
-                            key={msg.id}
-                            image={msg.sender.profile?.avatar ? `http://localhost:3000${msg.sender.profile?.avatar}` : catpic}
-                            message={msg.text}
+                            return isMe ? (
+                                <MessageSent key={msg.id} message={msg.text} />
+                            ) : (
+                                <MessageReceived 
+                                    key={msg.id}
+                                    image={msg.sender.profile?.avatar ? `http://localhost:3000${msg.sender.profile?.avatar}` : catpic}
+                                    message={msg.text}
+                                />
+                            )
+                        })}
+                    </div>
+
+                    {/* <!-- Input Bar --> */}
+                    <div className="chat-input">
+                        <input 
+                            type="text" 
+                            placeholder="Message..."
+                            value={input}
+                            onChange={e => setInput(e.target.value)}
+                            onKeyDown={e => e.key === "Enter" && sendMessage()}
                         />
-                    )
-                })}
-            </div>
-
-            {/* <!-- Input Bar --> */}
-            <div className="chat-input">
-                <input 
-                    type="text" 
-                    placeholder="Message..."
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && sendMessage()}
-                />
-                <button className="icon-btn" onClick={sendMessage}>Send</button>
-            </div>
+                        <button className="icon-btn" onClick={sendMessage}>Send</button>
+                    </div> 
+                </>
+            ) : (
+                <div className='chat-placeholder'>
+                    <div className='chat-placeholder-icon'>💬</div>
+                    <h2>Your Messages</h2>
+                    <p>Select a conversation to start chatting</p>
+                </div>
+            )}
+            
         </div>
     )
 }

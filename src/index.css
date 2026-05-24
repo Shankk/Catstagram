@@ -5,7 +5,7 @@
   --border: #e5e4e7;
   --accent: palevioletred;
   --accent-soft: rgb(186, 95, 125);
-  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-bg: rgb(170, 59, 255);
   --accent-border: rgba(170, 59, 255, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow:
@@ -85,6 +85,7 @@ input {
 
   padding: 0em 1rem;
   padding-top: 1rem;
+  text-align: start;
 }
 
 input:not(:placeholder-shown) + label {

@@ -23,14 +23,14 @@ export async function unfollowUser(username) {
     });
 }
 
-export async function fetchUserBasic() {
+export async function fetchUser() {
     try {
-        const res = await fetch('http://localhost:3000/userbasic', {
+        const res = await fetch('http://localhost:3000/user', {
             method: 'GET',
             credentials: 'include'
         });
 
-        if(!res.ok) throw new Error('User basic fetch failed');
+        if(!res.ok) throw new Error('User data fetch failed');
         const data = await res.json();
         //console.log("fetched-Data: ", data)
         return data.user;
@@ -147,7 +147,7 @@ export async function uploadAvatar(file) {
     const form = new FormData();
     form.append("avatar", file);
 
-    const res = await fetch("http://localhost:3000/account/avatar", {
+    const res = await fetch("http://localhost:3000/profile/avatar", {
         method: "POST",
         credentials: "include",
         body: form
