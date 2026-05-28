@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../hooks/useUser';
 import { logoutUser } from "../../services/authService";
+import { useEffect, useState } from 'react';
 import  '../style/Home.css';
 import logo from '../../assets/cat-logo.png';
 import catpic from '../../assets/cat-profile.webp';
@@ -16,6 +17,10 @@ import send from '../../assets/icons/send.png'
 import sendFilled from '../../assets/icons/send-filled.png'
 import heart from '../../assets/icons/heart.png'
 import heartFilled from '../../assets/icons/heart-filled.png'
+import formatTimestamp from '../utility/timeFormatter';
+import { PostViewerModal } from './Modals';
+import { getUserPost } from '../../services/userService';
+
 
 export function Header() {
     const navigate = useNavigate();
@@ -24,7 +29,6 @@ export function Header() {
     const path = location.pathname;
     const onProfilePage = user != null ? path.startsWith(`/profile/${user.profile?.username}`) : false; 
 
-    
 
     const handleLogout = async () => {
         const success = await logoutUser();
@@ -92,23 +96,37 @@ function Story() {
     )
 }
 
-function Reel() {
+function Reel({post, onClick}) {
+
     return (
-        <div className="reel">
-            <div className="author">
-                <img className='user-img' src={null} alt="" />
-                <div>Author</div>
-                <div>Age</div>
+        <div className="feed-item">
+            <div className="feed-header">
+                <img className='feed-avatar' src={`http://localhost:3000${post.user.profile?.avatar}`} alt="" />
+                <div>{post.user.profile.username}</div>
+                <div>{formatTimestamp(post.createdAt)}</div>
             </div>
-            <div className="post">
-                <img src={null} alt="" />
-            </div>
-            <div className="social">
+            
+            {post.mediaType === "VIDEO" ? (
+                <video
+                    onClick={onClick}
+                    src={`http://localhost:3000${post.mediaUrl}`}
+                    className="feed-media"
+                    controls
+                />
+            ) : (
+                <img
+                    onClick={onClick}
+                    src={`http://localhost:3000${post.mediaUrl}`}
+                    className="feed-media"
+                />
+            )}
+            
+            <div className="feed-social">
                 <div className='left'>
-                    <img id="icon-like" className='icon' src={like} alt="" />
-                    <div className='reel-text'>2.6K</div>
-                    <img id="icon-comment" className='icon' src={chat} alt="" />
-                    <div className='reel-text'>103</div>
+                    <img id="icon-like" className='icon'  src={like} alt="" />
+                    <div className='feed-text'>{post._count.likes}</div>
+                    <img id="icon-comment" className='icon' onClick={onClick} src={chat} alt="" />
+                    <div className='feed-text'>{post._count.comments}</div>
                     <img id="icon-share" className='icon' src={share} alt="" />
                 </div>
                 <div className='right'>
@@ -116,8 +134,9 @@ function Reel() {
                 </div>
             </div>
             <div className="description">
-                <div className='reel-text'><span>Author Name </span>This is where text would be for a post 
-                    and it would be talking about something relating to the post.
+                <div className='feed-text'>
+                    <strong>{post.user.profile.username} </strong>
+                    {post.caption}
                 </div>
             </div>
         </div>
@@ -126,6 +145,22 @@ function Reel() {
 
 export default function Homepage() {
     const {user} = useUser();
+    const [feed, setFeed] = useState([]);
+    const [selectedPost, setSelectedPost] = useState(null);
+
+    useEffect(() => {
+        async function loadFeed() {
+            const res = await fetch("http://localhost:3000/feed", {
+                method: "GET",
+                credentials: "include"
+            });
+            
+            const data = await res.json();
+            setFeed(data);
+        }
+
+        loadFeed();
+    }, []);
 
     return (
         <>
@@ -138,9 +173,17 @@ export default function Homepage() {
                     <Story></Story>
                     <Story></Story>
                 </div>
-                <div className="reels">
-                    <Reel></Reel>
-                    <Reel></Reel>
+                <div className="home-feed">
+                    {feed.map(post => (
+                        <Reel 
+                            key={post.id}
+                            onClick={ async () => {
+                                const fullPost = await getUserPost(post.id);
+                                setSelectedPost(fullPost);
+                            }}
+                            post={post}
+                        />
+                    ))}
                 </div>
             </div>
             <div className='side'>
@@ -153,6 +196,13 @@ export default function Homepage() {
                 </div>
                 
             </div>
+
+            {selectedPost && (
+                <PostViewerModal 
+                    post={selectedPost}
+                    onClose={() => setSelectedPost(null)}
+                />
+            )}
         </>
     );
 }

@@ -1,62 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import '../style/Profile.css'
 import { useUser } from '../../hooks/useUser';
-import catpic from '../../assets/cat-profile.webp';
 import { useEffect, useState } from 'react';
-import { fetchUserProfile, followUser, unfollowUser } from '../../services/userService';
-
-function CreatePost({ onClose }) {
-    const [image, setImage] = useState(null);
-    const [caption, setCaption] = useState("");
-
-    function handleFile(e) {
-        setImage(e.target.files[0]);
-    }
-
-    async function handleSubmit() {
-        const form = new FormData();
-        form.append("post", image);
-        form.append("caption", caption);
-
-        await fetch("http://localhost:3000/profile/post", {
-            method: "POST",
-            credentials: "include",
-            body: form
-        });
-
-        onClose();
-        window.location.reload();
-    }
-
-    return (
-        <div className="create-post-modal">
-            <div className="post-modal-content">
-                
-                {image && (
-                    <img 
-                        src={URL.createObjectURL(image)} 
-                        className="post-preview"
-                    />
-                )}
-
-                <div>
-                    <h2>Create Post</h2>
-                    <input type="file" accept="image/*" onChange={handleFile} />
-                    <textarea
-                        placeholder="Write a caption..."
-                        value={caption}
-                        onChange={(e) => setCaption(e.target.value)}
-                    />
-
-                    <button onClick={handleSubmit}>Post</button>
-                    <button onClick={onClose}>Cancel</button>
-                </div>
-                
-            </div>
-        </div>
-    );
-}
-
+import { fetchUserProfile, followUser, getUserPost, unfollowUser } from '../../services/userService';
+import { CreatePost, PostViewerModal } from './Modals';
+import '../style/Profile.css'
+import catpic from '../../assets/cat-profile.webp';
 
 export function ProfilePage() {
     const navigate = useNavigate();
@@ -65,6 +13,7 @@ export function ProfilePage() {
     const [ userData, setUserData ] = useState(null);
     const [ showCreatePost, setShowCreatePost ] = useState(false);
     const [ activeTab, setActiveTab ] = useState("posts");
+    const [ selectedPost, setSelectedPost] = useState(null);
     const isOwnProfile = user?.id === userData?.user.id;
     const isFollowing = userData?.isFollowing;
 
@@ -152,14 +101,33 @@ export function ProfilePage() {
                                 <h3>Share Posts</h3>
                                 <p>when you share photos, they will appear on your profile.</p>
                             </div>
-                        ) : ( 
+                        ) : (
                             <div className='profile-posts'>    
                                 {userData?.user.posts.map(post => (
-                                    <img 
-                                        key={post.id}
-                                        src={`http://localhost:3000${post.imageUrl}`}
-                                        className="profile-post-thumb"
-                                    />
+                                    post.mediaType === "VIDEO" ? (
+                                        <video
+                                            key={post.id}
+                                            onClick={ async () => {
+                                                const fullPost = await getUserPost(post.id);
+                                                setSelectedPost(fullPost);
+                                            }}
+                                            src={`http://localhost:3000${post.mediaUrl}`}
+                                            className='profile-post-thumb'
+                                            muted
+                                            loop
+                                            playsInline
+                                        />
+                                    ) : (
+                                        <img 
+                                            key={post.id}
+                                            onClick={ async () => {
+                                                const fullPost = await getUserPost(post.id);
+                                                setSelectedPost(fullPost);
+                                            }}
+                                            src={`http://localhost:3000${post.mediaUrl}`}
+                                            className="profile-post-thumb"
+                                        />
+                                    )
                                 ))}
                             </div>
                         )}
@@ -179,6 +147,13 @@ export function ProfilePage() {
                     </>
                 )}
             </div>
+
+            {selectedPost && (
+                <PostViewerModal 
+                    post={selectedPost}
+                    onClose={() => setSelectedPost(null)}
+                />
+            )}
         </div>
         
     )

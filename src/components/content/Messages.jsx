@@ -182,7 +182,7 @@ function DirectMessageInbox({ setActiveConversationId}) {
                             image={other.profile?.avatar ? `http://localhost:3000${other.profile?.avatar}` : catpic }
                             username={other.profile?.username}
                             message={conv.messages[0]?.text || "No messages yet"}
-                            age={formatTimestamp(conv.messages[0].createdAt)} // You can replace this with a real timestamp formatter
+                            age={formatTimestamp(conv.messages[0]?.createdAt) || ""} // You can replace this with a real timestamp formatter
                             onClick={() => { setActiveConversationId(conv.id); localStorage.setItem("lastConversation", conv.id)}}
                             
                         />

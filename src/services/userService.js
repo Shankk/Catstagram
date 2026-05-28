@@ -155,3 +155,24 @@ export async function uploadAvatar(file) {
 
     return res.json();
 }
+
+export async function createPost(media, caption) {
+    const form = new FormData();
+    form.append("post", media);
+    form.append("caption", caption);
+
+    await fetch("http://localhost:3000/profile/post", {
+        method: "POST",
+        credentials: "include",
+        body: form
+    });
+}
+
+export async function getUserPost(id) {
+    const post = await fetch(`http://localhost:3000/posts/${id}`, {
+        method: "GET",
+        credentials: "include"
+    });
+
+    return post.json();
+}
