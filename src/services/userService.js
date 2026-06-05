@@ -1,19 +1,13 @@
 export async function followUser(username) {
-    try {
-        const res = await fetch(`http://localhost:3000/follow/${username}`, {
-            method: 'POST',
-            credentials: 'include',
-        });
+    const res = await fetch(`http://localhost:3000/follow/${username}`, {
+        method: 'POST',
+        credentials: 'include',
+    });
 
-        if(!res.ok) throw new Error('User follow fetch failed');
-        
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error('Follow error:', error);
-        return null;
-    }
+    if(!res.ok) throw new Error('User follow fetch failed');
     
+    const data = await res.json();
+    return data;
 }
 
 export async function unfollowUser(username) {
@@ -58,21 +52,15 @@ export async function fetchUserProfile(username) {
 }
 
 export async function fetchUserConversations() {
-    try {
-        const res = await fetch(`http://localhost:3000/conversations`, {
-            method: 'GET',
-            credentials: 'include',
-        })
+    const res = await fetch(`http://localhost:3000/conversations`, {
+        method: 'GET',
+        credentials: 'include',
+    })
 
-        if(!res.ok) throw new Error('User Conversations fetch failed');
-        
-        const data = await res.json();
-        return data;
-
-    } catch (error) {
-        console.error("Conversation fetch error: ", error);
-        return null;
-    }
+    if(!res.ok) throw new Error('User Conversations fetch failed');
+    
+    const data = await res.json();
+    return data;
 }
 
 export async function createNewConversation(otherUser) {
@@ -103,16 +91,26 @@ export async function fetchConversationMessages(activeConversationId) {
     return data;
 }
 
-export async function sendNewMessage(activeConversationId, input) {
-    const res = await fetch("http://localhost:3000/messages", {
+export async function sendUserMessage(activeConversationId, input) {
+    const res = await fetch(`http://localhost:3000/conversations/${activeConversationId}/send-message`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json"},
-        body: JSON.stringify({
-            conversationId: activeConversationId,
-            text: input
-        })
+        body: JSON.stringify({ text: input})
     })
+
+    const newMsg = await res.json();
+    return newMsg;
+}
+
+export async function sendUserPost(activeConversationId, postId) {
+    const res = await fetch(`http://localhost:3000/conversations/${activeConversationId}/send-post`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify({ postId: postId})
+    })
+
     const newMsg = await res.json();
     return newMsg;
 }

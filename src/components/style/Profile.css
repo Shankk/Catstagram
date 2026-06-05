@@ -28,6 +28,7 @@
     height: var(--profile-img-size);
     border-radius: 50%;
     background-color: white;
+    object-fit: cover;
 }
 
 .profile-details {

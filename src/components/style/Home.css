@@ -8,8 +8,6 @@
 
     --profile-img-width: 48px;
     --profile-font-size: 10px;
-
-    color: white;
 }
 /*  */
 .main {
@@ -53,6 +51,7 @@
     height: var(--profile-img-width);
     background-color: white;
     border-radius: 50%;
+    object-fit: cover;
 }
 .user-info {
     flex: 1;
@@ -61,25 +60,20 @@
 
     display: flex;
     flex-flow: column nowrap;
-    justify-content: start;
+    align-items: start;
 
 }
 .user-link {
     all: unset;
     font-weight: bold;
     cursor: pointer;
+    display: flex;
 }
 .user-name {
     display: flex;
     flex-flow: column nowrap;
 }
-.user-logout {
-    all: unset;
-    cursor: pointer;
-}
-.user-logout:hover {
-    text-decoration: underline;
-}
+
 /* main content */
 .stories {
     width: 600px;
@@ -172,12 +166,12 @@
     flex-flow: row nowrap;
     align-items: center;
     padding: 0.5em;
-    gap: 1em;
+    gap: 0.5em;
 }
 
 .feed-avatar {
     width: 40px;
-    height: 40px;
+    height: auto;
     border-radius: 50%;
     margin-right: 10px;
 }

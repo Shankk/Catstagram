@@ -1,65 +1,172 @@
-import { useState } from "react";
-import { createPost } from "../../services/userService";
+import { useEffect, useState } from "react";
+import { createPost, fetchUserConversations, sendUserPost } from "../../services/userService";
 import '../style/Modals.css'
+import like from '../../assets/icons/heart.png';
+import likefilled from '../../assets/icons/heart-filled.png'
+import chat from '../../assets/icons/chat.png';
+import share from '../../assets/icons/send.png';
+import save from '../../assets/icons/save.png';
+import { Link } from "react-router-dom";
+import { useUser } from "../../hooks/useUser";
 
-export function CreatePost({ onClose }) {
-    const [media, setMedia] = useState(null);
-    const [caption, setCaption] = useState("");
+export function CreatePostModal({ onClose }) {
+  const [media, setMedia] = useState(null);
+  const [caption, setCaption] = useState("");
 
-    function handleFile(e) {
-        setMedia(e.target.files[0]);
-    }
+  function handleFile(e) {
+      setMedia(e.target.files[0]);
+  }
 
-    async function handleSubmit() {
-        await createPost(media, caption)
+  async function handleSubmit() {
+    await createPost(media, caption)
 
-        onClose();
-        window.location.reload();
-    }
+    onClose();
+    window.location.reload();
+  }
 
-    return (
-        <div className="create-post-modal">
-            <div className="post-modal-content">
-                
-                {media && (
-                    media.type.startsWith("video/") ? (
-                        <video 
-                            src={URL.createObjectURL(media)} 
-                            controls 
-                            className='post-preview' 
-                        />
-                    ) : (
-                        <img 
-                            src={URL.createObjectURL(media)} 
-                            className="post-preview"
-                        />
-                    )
-                )}
+  return (
+    <div className="create-post-modal">
+      <div className="post-modal-content">
+        {media && (
+          media.type.startsWith("video/") ? (
+            <video 
+                src={URL.createObjectURL(media)} 
+                controls 
+                className='post-preview' 
+            />
+          ) : (
+            <img 
+                src={URL.createObjectURL(media)} 
+                className="post-preview"
+            />
+          )
+        )}
 
-                <div>
-                    <h2>Create Post</h2>
+        <div>
+          <h2>Create Post</h2>
 
-                    <input type="file" accept="image/*,video/*" onChange={handleFile} />
+          <input type="file" accept="image/*,video/*" onChange={handleFile} />
 
-                    <textarea
-                        placeholder="Write a caption..."
-                        value={caption}
-                        onChange={(e) => setCaption(e.target.value)}
-                    />
+          <textarea
+            placeholder="Write a caption..."
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+          />
 
-                    <button onClick={handleSubmit}>Post</button>
-                    <button onClick={onClose}>Cancel</button>
-                </div>
-                
-            </div>
+          <button onClick={handleSubmit}>Post</button>
+          <button onClick={onClose}>Cancel</button>
         </div>
-    );
+          
+      </div>
+    </div>
+  );
+}
+
+export function SendPostModal({ postId, onClose }) {
+  const {user} = useUser();
+  const [conversations, setConversations] = useState([]);
+
+  useEffect(() => {
+    async function load() {
+      const res = await fetchUserConversations();
+      setConversations(res);
+    }
+    load();
+  }, []);
+
+  async function sendTo(conversationId) {
+    await sendUserPost(conversationId, postId);
+    
+    onClose();
+  }
+
+  return (
+    <div className="send-modal-overlay">
+      <div className="send-modal-container">
+        <div className="send-modal-header">
+          <h3>Send to</h3>
+          <button className="send-modal-close" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="send-modal-list">
+          {conversations.map(conv => {
+            const other = conv.participants.find(p => p.userId !== user.id).user;
+
+            return (
+              <div
+                key={conv.id}
+                className="send-user-row"
+                onClick={() => sendTo(conv.id)}
+              >
+                <img
+                  className="send-user-avatar"
+                  src={`http://localhost:3000${other.profile.avatar}`}
+                  alt=""
+                />
+                <span className="send-user-name">{other.profile.username}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function PostViewerModal({ post, onClose }) {
-    if (!post) return null;
+  const [liked, setLiked] = useState(post.likes.length > 0);
+  const [likesCount, setLikesCount] = useState(post._count.likes);
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState("");
 
-    return (
+  useEffect(() => {
+    async function loadComments() {
+      const res = await fetch(`http://localhost:3000/posts/${post.id}/comments`, {
+        method: "GET",
+        credentials: "include"
+      });
+      setComments(await res.json());
+    }
+    loadComments();
+  }, [post.id]);
+
+  async function submitComment() {
+    if(!commentText.trim()) return;
+
+    const res = await fetch(`http://localhost:3000/posts/${post.id}/comments`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json"},
+      body: JSON.stringify({ text: commentText})
+    });
+
+    const newComment = await res.json();
+
+    setComments(prev => [...prev, newComment]);
+    setCommentText("");
+  }
+
+  async function toggleLike() {
+    if(liked) {
+      await fetch(`http://localhost:3000/posts/${post.id}/like`, {
+          method: "DELETE",
+          credentials: "include"
+      });
+      setLiked(false);
+      setLikesCount(likesCount - 1);
+    } else {
+      await fetch(`http://localhost:3000/posts/${post.id}/like`, {
+          method: "POST",
+          credentials: "include"
+      });
+      setLiked(true);
+      setLikesCount(likesCount + 1);
+    }
+  }
+
+  if (!post) return null;
+  
+  return (
     <div className="post-viewer-overlay" onClick={onClose}>
       <div className="post-viewer" onClick={(e) => e.stopPropagation()}>
         
@@ -78,25 +185,65 @@ export function PostViewerModal({ post, onClose }) {
 
         {/* Right side panel */}
         <div className="post-viewer-info">
-          <h3>@{post.user.profile.username}</h3>
-          <p>{post.caption}</p>
-
+          <div className="post-header">
+            <Link className='user-link' to={`profile/${post.user.profile.username}`}>
+              <img className='post-avatar' src={`http://localhost:3000${post.user.profile?.avatar}`} alt="" />
+            </Link>
+            <Link className='user-link' to={`profile/${post.user.profile.username}`}>
+              <div>{post.user.profile.username}</div>
+            </Link>    
+          </div>
+          
+          <div className='post-caption'>
+            <Link className='user-link' to={`profile/${post.user.profile.username}`}>
+              <img className='post-avatar' src={`http://localhost:3000${post.user.profile?.avatar}`} alt="" />
+            </Link>
+            <Link className='user-link' to={`profile/${post.user.profile.username}`}>
+              <div>{post.user.profile.username}</div>
+            </Link>  
+            {post.caption}
+          </div>
+         
           {/* Comments */}
           <div className="post-comments">
-            {post.comments.map((c) => (
-              <div key={c.id} className="comment">
-                <strong>@{c.user.profile.username}</strong> {c.text}
+            {comments.map(c => (
+              <div key={c.id} className="comment-row">
+                <Link className='user-link' to={`profile/${c.user.profile.username}`}>
+                  <img className="comment-avatar" src={`http://localhost:3000${c.user.profile.avatar}`} alt="" />
+                </Link>
+                <div className="comment-body">
+                  <Link className='user-link' to={`profile/${c.user.profile.username}`}>
+                    {c.user.profile.username}
+                  </Link>
+                  <span>{c.text}</span> 
+                </div>
               </div>
             ))}
           </div>
-
+          <div className="post-social">
+              <div className='left'>
+                <img id="icon-like" className='icon'  src={liked ? likefilled : like} alt="" onClick={() => toggleLike()} />
+                <div className='feed-text'>{likesCount}</div>
+                <img id="icon-comment" className='icon' onClick={null} src={chat} alt="" />
+                <div className='feed-text'>{post._count.comments}</div>
+                <img id="icon-share" className='icon' src={share} alt="" />
+              </div>
+              <div className='right'>
+                <img id="icon-save" className='icon' src={save} alt="" />
+              </div>
+          </div>
           {/* Add comment */}
-          <input
-            type="text"
-            placeholder="Add a comment..."
-            className="comment-input"
-          />
-
+          <div className="comment-input-row">
+            <input
+              className="comment-input"
+              type="text"
+              placeholder="Add a comment..."
+              value={commentText}
+              onChange={e => setCommentText(e.target.value)}
+            />
+            <button onClick={submitComment}>Post</button>
+          </div>
+          
         </div>
       </div>
     </div>

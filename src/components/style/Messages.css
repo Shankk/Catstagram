@@ -14,7 +14,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px;
+  margin-top: 8px;
+  padding: 0px 10px;
+}
+
+.avatar {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
 }
 
 .messages-header .username {
@@ -23,9 +32,14 @@
 }
 
 .new-message-btn {
+  height: 24px;
   background: none;
   border: none;
+  padding: 8px;
   cursor: pointer;
+}
+.new-message-btn:hover {
+  background: var(--accent);
 }
 
 /* SEARCH BAR */
@@ -165,6 +179,27 @@
   background: var(--accent);
   color: #fff;
   margin-right: 8px;
+}
+
+.message-post-preview {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.message-post-thumb {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.message-post-info {
+  display: flex;
+  flex-flow: column nowrap;
+  font-size: 13px;
 }
 
 /* INPUT BAR */

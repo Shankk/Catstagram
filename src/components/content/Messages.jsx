@@ -3,12 +3,14 @@ import { useUser } from '../../hooks/useUser';
 import { socket } from '../../hooks/useSocket';
 import { createNewConversation, fetchConversation, 
         fetchConversationMessages, fetchUserConversations, 
-        fetchUserSearch, sendNewMessage 
+        fetchUserSearch, getUserPost, sendUserMessage 
 } from '../../services/userService';
 import formatTimestamp from '../utility/timeFormatter';
 import catpic from '../../assets/cat-profile.webp';
 import SendIcon from '../../assets/icons/note-edit.svg';
 import  '../style/Messages.css';
+import { Link } from 'react-router-dom';
+import { PostViewerModal } from './Modals';
 
 function InboxItem({image, username, message, age, onClick}) {
     return (
@@ -22,19 +24,69 @@ function InboxItem({image, username, message, age, onClick}) {
     )
 }
 
-function MessageSent({message}) {
+function MessageSent({message, onOpenPost}) {
+    //console.log(message.post?.mediaUrl)
     return (
         <div className="message-row sent">
-            <div className="bubble">{message}</div>
+            {/* If message contains a post */}
+            {message.post ? (
+                <div className='bubble message-post-preview' onClick={onOpenPost}>
+                    {message.post.mediaType === "VIDEO" ? (
+                        <video             
+                        className='message-post-thumb'
+                        src={`http://localhost:3000${message.post?.mediaUrl}`}
+                        muted
+                        loop
+                        playsInline
+                    />
+                    ) : (
+                        <img 
+                        className="message-post-thumb" 
+                        src={`http://localhost:3000${message.post?.mediaUrl}`} alt="" />
+                    )}
+
+                    <div className='message-post-info'>
+                        <strong>@{message.post.user.profile.username}</strong>
+                        <span>Tap to view post</span>
+                    </div>
+                </div>
+            ) : (
+                <div className="bubble">{message.text}</div>
+            )}
+            
         </div>
     )
 }
 
-function MessageReceived({image, message}) {
+function MessageReceived({message, onOpenPost}) {
     return (
         <div className="message-row received">
-            <img src={image} className="avatar-small" />
-            <div className="bubble">{message}</div>
+            <img src={message.sender.profile?.avatar ? `http://localhost:3000${message.sender.profile?.avatar}` : catpic} className="avatar-small" />
+            {/* If message contains a post */}
+            {message.post ? (
+                <div className='bubble message-post-preview' onClick={onOpenPost}>
+                    {message.post.mediaType === "VIDEO" ? (
+                        <video             
+                        className='message-post-thumb'
+                        src={`http://localhost:3000${message.post?.mediaUrl}`}
+                        muted
+                        loop
+                        playsInline
+                    />
+                    ) : (
+                        <img 
+                        className="message-post-thumb" 
+                        src={`http://localhost:3000${message.post?.mediaUrl}`} alt="" />
+                    )}
+
+                    <div className='message-post-info'>
+                        <strong>@{message.post.user.profile.username}</strong>
+                        <span>Tap to view post</span>
+                    </div>
+                </div>
+            ) : (
+                <div className="bubble">{message.text}</div>
+            )}
         </div>
     )
     
@@ -110,6 +162,7 @@ function DirectMessageInbox({ setActiveConversationId}) {
 
         loadConversations();
     }, []);
+
     useEffect(() => {
         socket.on("new_message", msg => {
             setConversations(prev => {
@@ -155,7 +208,11 @@ function DirectMessageInbox({ setActiveConversationId}) {
         <div className='messages-page'>
             {/* <!-- Header --> */}
             <header className="messages-header">
-                <h2 className="username">{user.profile?.username}</h2>
+                <Link className='user-link' to={`/profile/${user.profile?.username}`}>
+                    <img className='avatar' src={`http://localhost:3000${user.profile?.avatar}`} alt="" />
+                    <h2 className="username">{user.profile?.username}</h2>
+                </Link>
+                
                 <button className="new-message-btn" onClick={() => setShowNewMessage(true)}>
                     <img src={SendIcon} alt="" />
                 </button>
@@ -206,6 +263,7 @@ function ChatScreen({activeConversationId}) {
     const { user } = useUser();
     const [ otherUser, setOtherUser] = useState(null);
     const [ messages, setMessages] = useState([]);
+    const [ selectedPost, setSelectedPost] = useState(null);
     const [ input, setInput] = useState("");
 
     useEffect(() => {
@@ -251,7 +309,7 @@ function ChatScreen({activeConversationId}) {
         if(!input.trim()) return;
 
         console.log("SEND MESSAGE FIRED");
-        const newMsg = await sendNewMessage(activeConversationId, input);
+        const newMsg = await sendUserMessage(activeConversationId, input);
         
         // Optimistic update (optional)
         setMessages(prev => [...prev, newMsg]);
@@ -285,13 +343,17 @@ function ChatScreen({activeConversationId}) {
                             const isMe = msg.senderId === user.id;
 
                             return isMe ? (
-                                <MessageSent key={msg.id} message={msg.text} />
+                                <MessageSent key={msg.id} message={msg} 
+                                onOpenPost={ async () => {
+                                    const fullPost = await getUserPost(msg.post.id);
+                                    setSelectedPost(fullPost)
+                                }} />
                             ) : (
-                                <MessageReceived 
-                                    key={msg.id}
-                                    image={msg.sender.profile?.avatar ? `http://localhost:3000${msg.sender.profile?.avatar}` : catpic}
-                                    message={msg.text}
-                                />
+                                <MessageReceived key={msg.id} message={msg} 
+                                onOpenPost={ async () => {
+                                    const fullPost = await getUserPost(msg.post.id);
+                                    setSelectedPost(fullPost)
+                                }} />
                             )
                         })}
                     </div>
@@ -314,6 +376,10 @@ function ChatScreen({activeConversationId}) {
                     <h2>Your Messages</h2>
                     <p>Select a conversation to start chatting</p>
                 </div>
+            )}
+
+            {selectedPost && (
+                <PostViewerModal post={selectedPost} onClose={() => setSelectedPost(null)}/>
             )}
             
         </div>

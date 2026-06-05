@@ -77,6 +77,16 @@ label {
   transition: all 0.2s ease;
 }
 
+button {
+  all: unset;
+  font-size: 10px;
+  color: var(--text);
+  background: var(--accent);
+  padding: 4px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 input {
   all:unset;
   flex: 1;

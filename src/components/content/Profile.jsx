@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../../hooks/useUser';
 import { useEffect, useState } from 'react';
 import { fetchUserProfile, followUser, getUserPost, unfollowUser } from '../../services/userService';
-import { CreatePost, PostViewerModal } from './Modals';
+import { CreatePostModal, PostViewerModal } from './Modals';
 import '../style/Profile.css'
 import catpic from '../../assets/cat-profile.webp';
 
@@ -15,7 +15,7 @@ export function ProfilePage() {
     const [ activeTab, setActiveTab ] = useState("posts");
     const [ selectedPost, setSelectedPost] = useState(null);
     const isOwnProfile = user?.id === userData?.user.id;
-    const isFollowing = userData?.isFollowing;
+    const isFollowing = !!userData?.isFollowing;
 
     async function loadProfile() {
         const data = await fetchUserProfile(username);
@@ -25,6 +25,7 @@ export function ProfilePage() {
     useEffect(() => {
         // React 19 false-postive. Ignore as our setState is safe.
         // eslint-disable-next-line react-hooks/set-state-in-effect
+        setUserData(null); // clear old profile data if exists.
         loadProfile();
     }, [username]);
 
@@ -92,7 +93,7 @@ export function ProfilePage() {
                 {activeTab === "posts" && (
                     <>
                         {showCreatePost && (
-                            <CreatePost onClose={() => setShowCreatePost(false)} />
+                            <CreatePostModal onClose={() => setShowCreatePost(false)} />
                         )}
 
                         {userData?.user.posts.length === 0 ? (

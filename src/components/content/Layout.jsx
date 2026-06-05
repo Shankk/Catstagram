@@ -14,10 +14,9 @@ export default function Layout() {
 
     return (
         <div className='page'>
-            <div className='header'>
-                <Header></Header>
-            </div>
-
+           
+            <Header></Header>
+            
             <main className="content">
                 <Outlet></Outlet>
             </main>
