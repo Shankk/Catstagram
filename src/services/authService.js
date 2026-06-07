@@ -1,6 +1,8 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 export async function fetchUserSession() {
     try {
-        const res = await fetch('http://localhost:3000/verify', {
+        const res = await fetch(`${API_URL}/verify`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -16,7 +18,7 @@ export async function fetchUserSession() {
 }
 
 export async function verifyPassword(password) {
-    const res = await fetch("http://localhost:3000/account/verify-password", {
+    const res = await fetch(`${API_URL}/account/verify-password`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -27,14 +29,14 @@ export async function verifyPassword(password) {
 }
 
 export async function deleteAccount() {
-    await fetch("http://localhost:3000/account/delete", {
+    await fetch(`${API_URL}/account/delete`, {
       method: "DELETE",
       credentials: "include"
     });
 }
 
 export async function loginUser({email, password}) {
-    const res = await fetch('http://localhost:3000/log-in', {
+    const res = await fetch(`${API_URL}/log-in`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -50,7 +52,7 @@ export async function loginUser({email, password}) {
 
 export async function logoutUser() {
     try{
-        const res = await fetch('http://localhost:3000/log-out', {
+        const res = await fetch(`${API_URL}/log-out`, {
             method: 'POST',
             credentials: 'include',
         });
@@ -65,7 +67,7 @@ export async function logoutUser() {
 }
 
 export async function signUpUser(email, firstname, lastname, dateofbirth, username, password, code) {
-    const res = await fetch('http://localhost:3000/sign-up', {
+    const res = await fetch(`${API_URL}/sign-up`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
