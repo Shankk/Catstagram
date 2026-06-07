@@ -1,5 +1,7 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 export async function followUser(username) {
-    const res = await fetch(`http://localhost:3000/follow/${username}`, {
+    const res = await fetch(`${API_URL}/follow/${username}`, {
         method: 'POST',
         credentials: 'include',
     });
@@ -11,7 +13,7 @@ export async function followUser(username) {
 }
 
 export async function unfollowUser(username) {
-    await fetch(`http://localhost:3000/follow/${username}`, {
+    await fetch(`${API_URL}/follow/${username}`, {
         method: 'DELETE',
         credentials: 'include',
     });
@@ -19,7 +21,7 @@ export async function unfollowUser(username) {
 
 export async function fetchUser() {
     try {
-        const res = await fetch('http://localhost:3000/user', {
+        const res = await fetch(`${API_URL}/user`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -36,7 +38,7 @@ export async function fetchUser() {
 
 export async function fetchUserProfile(username) {
     try {
-        const res = await fetch(`http://localhost:3000/profile/${username}`, {
+        const res = await fetch(`${API_URL}/profile/${username}`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -52,7 +54,7 @@ export async function fetchUserProfile(username) {
 }
 
 export async function fetchUserConversations() {
-    const res = await fetch(`http://localhost:3000/conversations`, {
+    const res = await fetch(`${API_URL}/conversations`, {
         method: 'GET',
         credentials: 'include',
     })
@@ -64,7 +66,7 @@ export async function fetchUserConversations() {
 }
 
 export async function createNewConversation(otherUser) {
-    const res = await fetch("http://localhost:3000/conversations", {
+    const res = await fetch(`${API_URL}/conversations`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -76,7 +78,7 @@ export async function createNewConversation(otherUser) {
 }
 
 export async function fetchConversation(activeConversationId) {
-    const res = await fetch(`http://localhost:3000/conversations/${activeConversationId}`, {
+    const res = await fetch(`${API_URL}/conversations/${activeConversationId}`, {
         credentials: "include"
     });
     const data = await res.json();
@@ -84,7 +86,7 @@ export async function fetchConversation(activeConversationId) {
 }
 
 export async function fetchConversationMessages(activeConversationId) {
-    const res = await fetch(`http://localhost:3000/conversations/${activeConversationId}/messages`, {
+    const res = await fetch(`${API_URL}/conversations/${activeConversationId}/messages`, {
         credentials: "include"
     });
     const data = await res.json();
@@ -92,7 +94,7 @@ export async function fetchConversationMessages(activeConversationId) {
 }
 
 export async function sendUserMessage(activeConversationId, input) {
-    const res = await fetch(`http://localhost:3000/conversations/${activeConversationId}/send-message`, {
+    const res = await fetch(`${API_URL}/conversations/${activeConversationId}/send-message`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json"},
@@ -104,7 +106,7 @@ export async function sendUserMessage(activeConversationId, input) {
 }
 
 export async function sendUserPost(activeConversationId, postId) {
-    const res = await fetch(`http://localhost:3000/conversations/${activeConversationId}/send-post`, {
+    const res = await fetch(`${API_URL}/conversations/${activeConversationId}/send-post`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json"},
@@ -116,7 +118,7 @@ export async function sendUserPost(activeConversationId, postId) {
 }
 
 export async function fetchUserSearch(search) {
-    const res = await fetch(`http://localhost:3000/search-users?query=${search}`, {
+    const res = await fetch(`${API_URL}/search-users?query=${search}`, {
         credentials: "include"
     });
     const data = await res.json();
@@ -124,7 +126,7 @@ export async function fetchUserSearch(search) {
 }
 
 export async function updateProfile(form) {
-    await fetch(`http://localhost:3000/profile`, {
+    await fetch(`${API_URL}/profile`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -133,7 +135,7 @@ export async function updateProfile(form) {
 }
 
 export async function updateAccount(payload) {
-    await fetch(`http://localhost:3000/account`, {
+    await fetch(`${API_URL}/account`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -145,7 +147,7 @@ export async function uploadAvatar(file) {
     const form = new FormData();
     form.append("avatar", file);
 
-    const res = await fetch("http://localhost:3000/profile/avatar", {
+    const res = await fetch(`${API_URL}/profile/avatar`, {
         method: "POST",
         credentials: "include",
         body: form
@@ -159,7 +161,7 @@ export async function createPost(media, caption) {
     form.append("post", media);
     form.append("caption", caption);
 
-    await fetch("http://localhost:3000/profile/post", {
+    await fetch(`${API_URL}/profile/post`, {
         method: "POST",
         credentials: "include",
         body: form
@@ -167,10 +169,63 @@ export async function createPost(media, caption) {
 }
 
 export async function getUserPost(id) {
-    const post = await fetch(`http://localhost:3000/posts/${id}`, {
+    const post = await fetch(`${API_URL}/posts/${id}`, {
         method: "GET",
         credentials: "include"
     });
 
     return post.json();
+}
+
+export async function fetchUserFeed() {
+    const res = await fetch(`${API_URL}/feed`, {
+        method: "GET",
+        credentials: "include"
+    });
+    const data = await res.json();
+    return data;
+}
+
+export async function fetchUserSuggested() {
+    const res = await fetch(`${API_URL}/suggested`, {
+        method: "GET",
+        credentials: "include"
+    });
+    const data = await res.json();
+    return data;
+}
+
+export async function likeUserPost(postId) {
+    await fetch(`${API_URL}/posts/${postId}/like`, {
+        method: "POST",
+        credentials: "include"
+    });
+}
+
+export async function unlikeUserPost(postId) {
+    await fetch(`${API_URL}/posts/${postId}/like`, {
+        method: "DELETE",
+        credentials: "include"
+    });
+}
+
+export async function fetchPostComments(postId) {
+    const res = await fetch(`${API_URL}/posts/${postId}/comments`, {
+        method: "GET",
+        credentials: "include"
+    });
+    const data = await res.json();
+    return data;
+}
+
+export async function uploadPostComment(postId, comment) {
+    const res = await fetch(`${API_URL}/posts/${postId}/comments`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json"},
+      body: JSON.stringify({ text: comment})
+    });
+
+    const data = await res.json();
+    return data;
 }

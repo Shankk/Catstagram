@@ -34,7 +34,7 @@ function MessageSent({message, onOpenPost}) {
                     {message.post.mediaType === "VIDEO" ? (
                         <video             
                         className='message-post-thumb'
-                        src={`http://localhost:3000${message.post?.mediaUrl}`}
+                        src={message.post?.mediaUrl}
                         muted
                         loop
                         playsInline
@@ -42,7 +42,7 @@ function MessageSent({message, onOpenPost}) {
                     ) : (
                         <img 
                         className="message-post-thumb" 
-                        src={`http://localhost:3000${message.post?.mediaUrl}`} alt="" />
+                        src={message.post?.mediaUrl} alt="" />
                     )}
 
                     <div className='message-post-info'>
@@ -61,14 +61,14 @@ function MessageSent({message, onOpenPost}) {
 function MessageReceived({message, onOpenPost}) {
     return (
         <div className="message-row received">
-            <img src={message.sender.profile?.avatar ? `http://localhost:3000${message.sender.profile?.avatar}` : catpic} className="avatar-small" />
+            <img src={message.sender.profile?.avatar ? message.sender.profile?.avatar : catpic} className="avatar-small" />
             {/* If message contains a post */}
             {message.post ? (
                 <div className='bubble message-post-preview' onClick={onOpenPost}>
                     {message.post.mediaType === "VIDEO" ? (
                         <video             
                         className='message-post-thumb'
-                        src={`http://localhost:3000${message.post?.mediaUrl}`}
+                        src={message.post?.mediaUrl}
                         muted
                         loop
                         playsInline
@@ -76,7 +76,7 @@ function MessageReceived({message, onOpenPost}) {
                     ) : (
                         <img 
                         className="message-post-thumb" 
-                        src={`http://localhost:3000${message.post?.mediaUrl}`} alt="" />
+                        src={message.post?.mediaUrl} alt="" />
                     )}
 
                     <div className='message-post-info'>
@@ -127,7 +127,7 @@ function NewConversationModal({ onClose, onSelectUser }) {
               className="result-item"
               onClick={() => onSelectUser(user)}
             >
-              <img src={user.profile.avatar ? `http://localhost:3000${user.profile.avatar}` : catpic  } />
+              <img src={user.profile.avatar ? user.profile.avatar : catpic  } />
               <span>{user.profile.username}</span>
             </div>
           ))}
@@ -209,7 +209,7 @@ function DirectMessageInbox({ setActiveConversationId}) {
             {/* <!-- Header --> */}
             <header className="messages-header">
                 <Link className='user-link' to={`/profile/${user.profile?.username}`}>
-                    <img className='avatar' src={`http://localhost:3000${user.profile?.avatar}`} alt="" />
+                    <img className='avatar' src={user.profile?.avatar} alt="" />
                     <h2 className="username">{user.profile?.username}</h2>
                 </Link>
                 
@@ -236,7 +236,7 @@ function DirectMessageInbox({ setActiveConversationId}) {
                     return (
                         <InboxItem
                             key={conv.id}
-                            image={other.profile?.avatar ? `http://localhost:3000${other.profile?.avatar}` : catpic }
+                            image={other.profile?.avatar ? other.profile?.avatar : catpic }
                             username={other.profile?.username}
                             message={conv.messages[0]?.text || "No messages yet"}
                             age={formatTimestamp(conv.messages[0]?.createdAt) || ""} // You can replace this with a real timestamp formatter
@@ -326,7 +326,7 @@ function ChatScreen({activeConversationId}) {
                     {/* <!-- Chat Header --> */}
                     <header className="chat-header">
                         <div className="chat-user">
-                            <img className="avatar-small" src={otherUser?.profile?.avatar ? `http://localhost:3000${otherUser?.profile?.avatar}` : catpic} />
+                            <img className="avatar-small" src={otherUser?.profile.avatar ? otherUser?.profile.avatar : catpic} />
                             <p className="name">{otherUser?.profile?.username}</p>
                         </div>
                         <button className="back-btn">

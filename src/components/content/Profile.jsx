@@ -41,7 +41,7 @@ export function ProfilePage() {
     return (
         <div className='profile-content'>
             <div className='profile-box'>
-                <img id='profile-img' src={userData?.user.profile.avatar ? `http://localhost:3000${userData?.user.profile.avatar}` : catpic} alt="" />
+                <img id='profile-img' src={userData?.user.profile.avatar ? userData?.user.profile.avatar : catpic} alt="" />
                 <div className='profile-details'>
                     <div className='profile-username'>{userData?.user.profile.username}</div>
                     <div className='profile-fullname'>{ userData?.user.profile.firstname } { userData?.user.profile.lastname }</div>
@@ -112,7 +112,7 @@ export function ProfilePage() {
                                                 const fullPost = await getUserPost(post.id);
                                                 setSelectedPost(fullPost);
                                             }}
-                                            src={`http://localhost:3000${post.mediaUrl}`}
+                                            src={post.mediaUrl}
                                             className='profile-post-thumb'
                                             muted
                                             loop
@@ -125,7 +125,7 @@ export function ProfilePage() {
                                                 const fullPost = await getUserPost(post.id);
                                                 setSelectedPost(fullPost);
                                             }}
-                                            src={`http://localhost:3000${post.mediaUrl}`}
+                                            src={post.mediaUrl}
                                             className="profile-post-thumb"
                                         />
                                     )

@@ -3,7 +3,7 @@ import { useUser } from '../../hooks/useUser';
 import { logoutUser } from "../../services/authService";
 import { useEffect, useState } from 'react';
 import { CreatePostModal, PostViewerModal, SendPostModal } from './Modals';
-import { followUser, getUserPost, unfollowUser } from '../../services/userService';
+import { fetchUserFeed, fetchUserSuggested, followUser, getUserPost, unfollowUser } from '../../services/userService';
 
 import  '../style/Home.css';
 import logo from '../../assets/cat-logo.png';
@@ -80,7 +80,7 @@ export function Header() {
                 <button className="nav-container" onClick={() => setShowCreatePost(true)} ><img className="nav-icon" src={create} alt="" />Create</button>
                 <Link className={`nav-container ${onProfilePage ? "active-profile" : ""}`} to={user ?`/profile/${user.profile?.username}` : "#"}>
                     <div className='profile-border'>
-                        <img className="nav-icon"  id="header-profile-img" src={user.profile?.avatar ? `http://localhost:3000${user.profile?.avatar}` : catpic} alt={null} />
+                        <img className="nav-icon"  id="header-profile-img" src={user.profile?.avatar ? user.profile?.avatar : catpic} alt={null} />
                     </div>
                     Profile
                 </Link>
@@ -179,7 +179,7 @@ function Reel({post, onClick}) {
         <div className="feed-item">
             <div className="feed-header">
                 <Link className='user-link' to={`profile/${post.user.profile.username}`}>
-                    <img className='feed-avatar' src={`http://localhost:3000${post.user.profile?.avatar}`} alt="" />
+                    <img className='feed-avatar' src={post.user.profile?.avatar} alt="" />
                 </Link>
                 <Link className='user-link' to={`profile/${post.user.profile.username}`}>
                     <div>{post.user.profile.username}</div>
@@ -191,14 +191,14 @@ function Reel({post, onClick}) {
             {post.mediaType === "VIDEO" ? (
                 <video
                     onClick={onClick}
-                    src={`http://localhost:3000${post.mediaUrl}`}
+                    src={post.mediaUrl}
                     className="feed-media"
                     controls
                 />
             ) : (
                 <img
                     onClick={onClick}
-                    src={`http://localhost:3000${post.mediaUrl}`}
+                    src={post.mediaUrl}
                     className="feed-media"
                 />
             )}
@@ -236,6 +236,7 @@ export default function Homepage() {
     const [selectedPost, setSelectedPost] = useState(null);
     const [suggested, setSuggested] = useState([]);
 
+
     const handleLogout = async () => {
         const success = await logoutUser();
         if(success) {
@@ -248,12 +249,7 @@ export default function Homepage() {
 
     useEffect(() => {
         async function loadFeed() {
-            const res = await fetch("http://localhost:3000/feed", {
-                method: "GET",
-                credentials: "include"
-            });
-            
-            const data = await res.json();
+            const data = await fetchUserFeed();
             setFeed(data);
         }
 
@@ -262,17 +258,12 @@ export default function Homepage() {
 
     useEffect(() => {
         async function loadSuggestions() {
-            const res = await fetch("http://localhost:3000/suggested", {
-                method: "GET",
-                credentials: "include"
-            });
-            const data = await res.json();
+            const data = await fetchUserSuggested();
             setSuggested(data);
         }
 
         loadSuggestions();
     }, []);
-
 
     return (
         <>
@@ -300,7 +291,7 @@ export default function Homepage() {
             </div>
             <div className='side'>
                 <User 
-                    image={user.profile?.avatar ? `http://localhost:3000${user.profile?.avatar}` : catpic} 
+                    image={user.profile?.avatar ? user.profile?.avatar : catpic} 
                     username={user.profile?.username} 
                     name={user.profile?.firstname}
                     onClick={handleLogout}
@@ -310,7 +301,7 @@ export default function Homepage() {
                 <div>Suggested for you </div>
                 {suggested.map(u => (
                     <User
-                        image={u.profile?.avatar ? `http://localhost:3000${u.profile?.avatar}` : catpic} 
+                        image={u.profile?.avatar ? u.profile?.avatar : catpic} 
                         username={u.profile?.username} 
                         name={u.profile?.firstname} 
                         isUser={false}>

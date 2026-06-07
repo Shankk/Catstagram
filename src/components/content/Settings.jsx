@@ -71,7 +71,7 @@ function ProfileSettingsForm() {
         <div className="input-column" id="left">
           
           <div className="avatar-preview">
-            <img src={form.avatar ? `http://localhost:3000${form.avatar}` : catpic} alt="Avatar" className="avatar-img" />
+            <img src={form.avatar ? form.avatar : catpic} alt="Avatar" className="avatar-img" />
           </div>
 
         </div>

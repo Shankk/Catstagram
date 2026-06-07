@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createPost, fetchUserConversations, sendUserPost } from "../../services/userService";
+import { createPost, fetchPostComments, fetchUserConversations, likeUserPost, sendUserPost, unlikeUserPost, uploadPostComment } from "../../services/userService";
 import '../style/Modals.css'
 import like from '../../assets/icons/heart.png';
 import likefilled from '../../assets/icons/heart-filled.png'
@@ -100,7 +100,7 @@ export function SendPostModal({ postId, onClose }) {
               >
                 <img
                   className="send-user-avatar"
-                  src={`http://localhost:3000${other.profile.avatar}`}
+                  src={other.profile.avatar}
                   alt=""
                 />
                 <span className="send-user-name">{other.profile.username}</span>
@@ -121,11 +121,8 @@ export function PostViewerModal({ post, onClose }) {
 
   useEffect(() => {
     async function loadComments() {
-      const res = await fetch(`http://localhost:3000/posts/${post.id}/comments`, {
-        method: "GET",
-        credentials: "include"
-      });
-      setComments(await res.json());
+      const data = await fetchPostComments(post.id)
+      setComments(data);
     }
     loadComments();
   }, [post.id]);
@@ -133,14 +130,8 @@ export function PostViewerModal({ post, onClose }) {
   async function submitComment() {
     if(!commentText.trim()) return;
 
-    const res = await fetch(`http://localhost:3000/posts/${post.id}/comments`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json"},
-      body: JSON.stringify({ text: commentText})
-    });
-
-    const newComment = await res.json();
+    const data = await uploadPostComment(post.id, commentText)
+    const newComment = data;
 
     setComments(prev => [...prev, newComment]);
     setCommentText("");
@@ -148,17 +139,11 @@ export function PostViewerModal({ post, onClose }) {
 
   async function toggleLike() {
     if(liked) {
-      await fetch(`http://localhost:3000/posts/${post.id}/like`, {
-          method: "DELETE",
-          credentials: "include"
-      });
+      await unlikeUserPost(post.id);
       setLiked(false);
       setLikesCount(likesCount - 1);
     } else {
-      await fetch(`http://localhost:3000/posts/${post.id}/like`, {
-          method: "POST",
-          credentials: "include"
-      });
+      await likeUserPost(post.id);
       setLiked(true);
       setLikesCount(likesCount + 1);
     }
@@ -174,31 +159,31 @@ export function PostViewerModal({ post, onClose }) {
         <div className="post-viewer-media">
           {post.mediaType === "VIDEO" ? (
             <video
-              src={`http://localhost:3000${post.mediaUrl}`}
+              src={post.mediaUrl}
               controls
               autoPlay
             />
           ) : (
-            <img src={`http://localhost:3000${post.mediaUrl}`} />
+            <img src={post.mediaUrl} />
           )}
         </div>
 
         {/* Right side panel */}
         <div className="post-viewer-info">
           <div className="post-header">
-            <Link className='user-link' to={`profile/${post.user.profile.username}`}>
-              <img className='post-avatar' src={`http://localhost:3000${post.user.profile?.avatar}`} alt="" />
+            <Link className='user-link' to={`/profile/${post.user.profile.username}`}>
+              <img className='post-avatar' src={post.user.profile?.avatar} alt="" />
             </Link>
-            <Link className='user-link' to={`profile/${post.user.profile.username}`}>
+            <Link className='user-link' to={`/profile/${post.user.profile.username}`}>
               <div>{post.user.profile.username}</div>
             </Link>    
           </div>
           
           <div className='post-caption'>
-            <Link className='user-link' to={`profile/${post.user.profile.username}`}>
-              <img className='post-avatar' src={`http://localhost:3000${post.user.profile?.avatar}`} alt="" />
+            <Link className='user-link' to={`/profile/${post.user.profile.username}`}>
+              <img className='post-avatar' src={post.user.profile?.avatar} alt="" />
             </Link>
-            <Link className='user-link' to={`profile/${post.user.profile.username}`}>
+            <Link className='user-link' to={`/profile/${post.user.profile.username}`}>
               <div>{post.user.profile.username}</div>
             </Link>  
             {post.caption}
@@ -208,11 +193,11 @@ export function PostViewerModal({ post, onClose }) {
           <div className="post-comments">
             {comments.map(c => (
               <div key={c.id} className="comment-row">
-                <Link className='user-link' to={`profile/${c.user.profile.username}`}>
-                  <img className="comment-avatar" src={`http://localhost:3000${c.user.profile.avatar}`} alt="" />
+                <Link className='user-link' to={`/profile/${c.user.profile.username}`}>
+                  <img className="comment-avatar" src={c.user.profile.avatar} alt="" />
                 </Link>
                 <div className="comment-body">
-                  <Link className='user-link' to={`profile/${c.user.profile.username}`}>
+                  <Link className='user-link' to={`/profile/${c.user.profile.username}`}>
                     {c.user.profile.username}
                   </Link>
                   <span>{c.text}</span> 
