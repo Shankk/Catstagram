@@ -41,10 +41,16 @@ export async function loginUser({email, password}) {
         body: JSON.stringify({ email, password })
     });
 
+    if(res.status === 500)  {
+        const data = await res.json();
+        return console.log("Server 500 error:", data.error);
+    };
+    if(res.status === 401)  {
+        const data = await res.json();
+        return console.log("Server 401 error:", data.error);
+    };
+    
     const data = await res.json();
-
-    if(!res.ok) throw new Error(data.error || 'Login failed');
-
     return data;
 }
 

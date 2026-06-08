@@ -20,12 +20,9 @@ function LogInForm() {
 
     const handleSubmit = async(e) => {
         e.preventDefault();
-        try{
-            await loginUser({ email, password});
-            navigate('/');
-            window.location.reload();
-        } catch (err) {
-            console.error('Login failed: ', err);
+        const res = await loginUser({ email, password});
+        if(res.success) {
+           navigate('/'); 
         }
     }
 
