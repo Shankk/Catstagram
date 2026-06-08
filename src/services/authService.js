@@ -1,20 +1,18 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function fetchUserSession() {
-    try {
-        const res = await fetch(`${API_URL}/verify`, {
-            method: 'GET',
-            credentials: 'include'
-        });
+    const res = await fetch(`${API_URL}/verify`, {
+        method: 'GET',
+        credentials: 'include'
+    });
 
-        if(!res.ok) throw new Error('Session fetch failed');
+    if(res.status === 401) {
         const data = await res.json();
-        
-        return data;
-    } catch (error) {
-        console.error('Auth error:', error);
-        return null;
+        return console.log("Session Fetch Failed:", data.message)
     }
+    
+    const data = await res.json();
+    return data;
 }
 
 export async function verifyPassword(password) {

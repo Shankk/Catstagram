@@ -20,20 +20,19 @@ export async function unfollowUser(username) {
 }
 
 export async function fetchUser() {
-    try {
-        const res = await fetch(`${API_URL}/user`, {
-            method: 'GET',
-            credentials: 'include'
-        });
+    const res = await fetch(`${API_URL}/user`, {
+        method: 'GET',
+        credentials: 'include'
+    });
 
-        if(!res.ok) throw new Error('User data fetch failed');
+    if(res.status === 401) {
         const data = await res.json();
-        //console.log("fetched-Data: ", data)
-        return data.user;
-    } catch (error) {
-        console.error('Auth error:', error);
-        return null;
-    }
+        return console.log("Auth Error:", data.error ,"\nMessage:", data.message)
+    };
+    
+    const data = await res.json();
+    //console.log("fetched-Data: ", data)
+    return data.user;
 }
 
 export async function fetchUserProfile(username) {
