@@ -23,7 +23,6 @@ function LogInForm() {
         const res = await loginUser({ email, password});
         if(res.success) {
            navigate('/'); 
-           window.location.reload();
         }
     }
 

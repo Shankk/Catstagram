@@ -36,8 +36,8 @@ export async function deleteAccount() {
 export async function loginUser({email, password}) {
     const res = await fetch(`${API_URL}/log-in`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
     });
 
@@ -49,7 +49,7 @@ export async function loginUser({email, password}) {
         const data = await res.json();
         return console.log("Server 401 error:", data.error);
     };
-    
+
     const data = await res.json();
     return data;
 }
