@@ -8,18 +8,20 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        async function getUser() {
-            const userData = await fetchUser();
-            setUser(userData);
-            setLoading(false);
-        }
 
+    async function getUser() {
+        const userData = await fetchUser();
+        setUser(userData);
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         getUser();
     }, [])
 
     return (
-        <UserContext.Provider value={{user, setUser, loading}}>
+        <UserContext.Provider value={{user, setUser, loading, getUser}}>
             {children}
         </UserContext.Provider>
     );

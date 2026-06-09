@@ -9,13 +9,13 @@ export function useEnsureAuth() {
     useEffect(() => {
         async function checkUserSession() {
             try {
-              const sessionUser = await fetchUserSession();
+                const sessionUser = await fetchUserSession();
                 console.log("isUserAuthed?: ", sessionUser?.authenticated);
                 setAuth(sessionUser?.authenticated || false);  
             } catch (error) {
                 setAuth(false);
             } finally {
-              setLoading(false);  
+                setLoading(false);  
             }
         }
 

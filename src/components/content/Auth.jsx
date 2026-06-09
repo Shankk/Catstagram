@@ -2,9 +2,10 @@ import logo from '../../assets/cat-logo.png'
 import front from '../../assets/front-social.png'
 import '../style/Auth.css'
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { loginUser, signUpUser } from "../../services/authService";
 import CustomDropdown from "../utility/CustomDropdown";
+import { UserContext } from '../utility/UserGet';
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1);
 const months = [
@@ -17,12 +18,14 @@ function LogInForm() {
     const navigate = useNavigate();
     const [email, setEmail ] = useState('');
     const [password, setPassword ] = useState('');
+    const { getUser } = useContext(UserContext);
 
     const handleSubmit = async(e) => {
         e.preventDefault();
         const res = await loginUser({ email, password});
         if(res.success) {
-           navigate('/'); 
+            await getUser();
+            navigate('/'); 
         }
     }
 
